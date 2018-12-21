@@ -6,6 +6,9 @@
 
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
+    <!-- Required for complications to receive complication data and open the provider chooser. -->
+    <uses-permission android:name="com.google.android.wearable.permission.RECEIVE_COMPLICATION_DATA"/>
+
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -32,6 +35,31 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <service
+                android:name=".HelloDigitalWatchFace"
+                android:label="@string/my_digital_name"
+                android:permission="android.permission.BIND_WALLPAPER">
+            <meta-data
+                    android:name="android.service.wallpaper"
+                    android:resource="@xml/watch_face"/>
+            <meta-data
+                    android:name="com.google.android.wearable.watchface.preview"
+                    android:resource="@drawable/preview_digital"/>
+            <meta-data
+                    android:name="com.google.android.wearable.watchface.preview_circular"
+                    android:resource="@drawable/preview_digital_circular"/>
+
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService"/>
+
+                <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE"/>
+            </intent-filter>
+        </service>
+
+        <meta-data
+                android:name="com.google.android.gms.version"
+                android:value="@integer/google_play_services_version"/>
     </application>
 
 </manifest>
