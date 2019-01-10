@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools" package="im.rah.nightwear">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="im.rah.nightwear">
 
     <uses-feature android:name="android.hardware.type.watch"/>
 
@@ -15,7 +16,8 @@
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:supportsRtl="true"
-            android:theme="@android:style/Theme.DeviceDefault">
+            android:theme="@android:style/Theme.DeviceDefault"
+            tools:ignore="GoogleAppIndexingWarning">
         <uses-library
                 android:name="com.google.android.wearable"
                 android:required="true"/>
@@ -28,7 +30,7 @@
                 android:value="true"/>
 
         <activity
-                android:name="im.rah.nightwear.MainHelloActivity"
+                android:name=".MainHelloActivity"
                 android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -36,52 +38,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <service
-                android:name="im.rah.nightwear.HelloDigitalWatchFace"
-                android:label="@string/my_digital_name"
-                android:permission="android.permission.BIND_WALLPAPER">
-            <meta-data
-                    android:name="android.service.wallpaper"
-                    android:resource="@xml/watch_face"/>
-            <meta-data
-                    android:name="com.google.android.wearable.watchface.preview"
-                    android:resource="@drawable/preview_digital"/>
-            <meta-data
-                    android:name="com.google.android.wearable.watchface.preview_circular"
-                    android:resource="@drawable/preview_digital_circular"/>
-
-            <intent-filter>
-                <action android:name="android.service.wallpaper.WallpaperService"/>
-
-                <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE"/>
-            </intent-filter>
-        </service>
-
+        
         <meta-data
                 android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version"/>
-
-        <service
-                android:name="im.rah.nightwear.HelloAnalogWatchFace"
-                android:label="@string/my_analog_name"
-                android:permission="android.permission.BIND_WALLPAPER">
-            <meta-data
-                    android:name="android.service.wallpaper"
-                    android:resource="@xml/watch_face"/>
-            <meta-data
-                    android:name="com.google.android.wearable.watchface.preview"
-                    android:resource="@drawable/preview_analog"/>
-            <meta-data
-                    android:name="com.google.android.wearable.watchface.preview_circular"
-                    android:resource="@drawable/preview_analog"/>
-
-            <intent-filter>
-                <action android:name="android.service.wallpaper.WallpaperService"/>
-
-                <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE"/>
-            </intent-filter>
-        </service>
     </application>
 
 </manifest>
