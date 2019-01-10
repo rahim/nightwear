@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "im.rah.wearhello"
+        applicationId "im.rah.nightwear"
         minSdkVersion 26
         targetSdkVersion 27
         versionCode 1

@@ -1,4 +1,4 @@
-package im.rah.wearhello
+package im.rah.nightwear
 
 import android.content.BroadcastReceiver
 import android.content.Context

@@ -1,4 +1,4 @@
-package im.rah.wearhello
+package im.rah.nightwear
 
 import android.os.Bundle
 import android.support.wearable.activity.WearableActivity
