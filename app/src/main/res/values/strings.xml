@@ -1,11 +1,6 @@
 <resources>
     <string name="app_name">NightWear</string>
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
-    <string name="hello_world">Hello Square World!</string>
+    <string name="bg_placeholder">---</string>
     <string name="message">Watch face tapped</string>
-    <string name="my_digital_name">Hello Digital Watchface</string>
-    <string name="my_analog_name">My Analog</string>
+    <string name="my_digital_name">NightWear</string>
 </resources>
