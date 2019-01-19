@@ -28,14 +28,17 @@ class MainHelloActivity : WearableActivity() {
     }
 
     private fun refresh() {
-        val textView = findViewById<TextView>(R.id.text)
+        val textReading = findViewById<TextView>(R.id.textReading)
+        val textReadingAge = findViewById<TextView>(R.id.textReadingAge)
         val url = "https://hugo-ns.herokuapp.com/api/v1/entries/current"
         val stringRequest = StringRequest(
             Request.Method.GET, url,
             Response.Listener<String> { response ->
-                textView.text = BloodGlucose.parse_tab_separated_current(response).toString()
+                val bg = BloodGlucose.parse_tab_separated_current(response)
+                textReading.text = bg.toString()
+                textReadingAge.text = bg.readingAge().toMinutes().toString() + "m"
             },
-            Response.ErrorListener { textView.text = "X" })
+            Response.ErrorListener { textReading.text = "X" })
 
         // Add the request to the RequestQueue.
         requestQueue.add(stringRequest)
