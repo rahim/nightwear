@@ -32,11 +32,13 @@ class MainHelloActivity : WearableActivity() {
         val url = "https://hugo-ns.herokuapp.com/api/v1/entries/current"
         val stringRequest = StringRequest(
             Request.Method.GET, url,
-            Response.Listener<String> { response -> textView.text = BloodGlucose.parse_tab_separated_current(response).glucose() },
-            Response.ErrorListener { textView.text = "That didn't work!" })
+            Response.Listener<String> { response ->
+                textView.text = BloodGlucose.parse_tab_separated_current(response).toString()
+            },
+            Response.ErrorListener { textView.text = "X" })
 
         // Add the request to the RequestQueue.
         requestQueue.add(stringRequest)
     }
-    
+
 }
