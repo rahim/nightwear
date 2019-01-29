@@ -51,9 +51,13 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
          * Handler message id for updating the time periodically in interactive mode.
          */
         private const val MSG_UPDATE_TIME = 0
+
+        private lateinit var bloodGlucoseService: BloodGlucoseService
     }
 
     override fun onCreateEngine(): Engine {
+        bloodGlucoseService = BloodGlucoseService(this)
+
         return Engine()
     }
 
@@ -99,6 +103,8 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
             }
         }
 
+//        private lateinit var mBloodGlucoseService: BloodGlucoseService
+
         override fun onCreate(holder: SurfaceHolder) {
             super.onCreate(holder)
 
@@ -124,6 +130,7 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
                 isAntiAlias = true
                 color = ContextCompat.getColor(applicationContext, R.color.digital_text)
             }
+
         }
 
         override fun onDestroy() {
@@ -144,6 +151,8 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
         override fun onTimeTick() {
             super.onTimeTick()
             invalidate()
+
+            bloodGlucoseService.tick()
         }
 
         override fun onAmbientModeChanged(inAmbientMode: Boolean) {
@@ -190,20 +199,12 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
                 )
             }
 
-            // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
-            val now = System.currentTimeMillis()
-            mCalendar.timeInMillis = now
+            val text = if (bloodGlucoseService.latestBg != null) {
+                bloodGlucoseService.latestBg.toString()
+            } else {
+                "---"
+            }
 
-            val text = if (mAmbient)
-                String.format(
-                    "%d:%02d", mCalendar.get(Calendar.HOUR),
-                    mCalendar.get(Calendar.MINUTE)
-                )
-            else
-                String.format(
-                    "%d:%02d:%02d", mCalendar.get(Calendar.HOUR),
-                    mCalendar.get(Calendar.MINUTE), mCalendar.get(Calendar.SECOND)
-                )
             canvas.drawText(text, mXOffset, mYOffset, mTextPaint)
         }
 
