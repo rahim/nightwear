@@ -8,6 +8,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import java.time.Duration
+import java.time.Instant
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -15,6 +16,7 @@ class BloodGlucoseService(context: Context) {
     var nightscoutUrl = "https://hugo-ns.herokuapp.com/api/v1/entries/current"
     private val requestQueue: RequestQueue = Volley.newRequestQueue(context)
     var latestBg:BloodGlucose? = null
+    var lastRequestAdded:Instant = Instant.EPOCH
 
     companion object {
         const val TAG:String = "BloodGlucoseService"
@@ -42,8 +44,10 @@ class BloodGlucoseService(context: Context) {
         Log.d(TAG, "refresh")
 
         if (latestReadingAge() < SENSOR_REFRESH_INTERVAL) return
+        if (Duration.between(lastRequestAdded, Instant.now()) < Duration.ofSeconds(30)) return
 
         Log.d(TAG, "requesting")
+        lastRequestAdded = Instant.now()
         val stringRequest = StringRequest(
             Request.Method.GET, nightscoutUrl,
             Response.Listener<String> { response ->
