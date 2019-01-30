@@ -199,13 +199,20 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
                 )
             }
 
-            val text = if (bloodGlucoseService.latestBg != null) {
-                bloodGlucoseService.latestBg.toString()
-            } else {
-                "---"
+            if (bloodGlucoseService.latestBg == null) {
+                val text = "---"
+                canvas.drawText(text, mXOffset, mYOffset, mTextPaint)
+                return
             }
 
-            canvas.drawText(text, mXOffset, mYOffset, mTextPaint)
+
+            val bgText = bloodGlucoseService.latestBg.toString()
+            canvas.drawText(bgText, mXOffset, mYOffset, mTextPaint)
+
+            if (!mAmbient) {
+                val readingAgeText = bloodGlucoseService.latestReadingAge().toMinutes().toString() + "m"
+                canvas.drawText(readingAgeText, mXOffset, mYOffset + mTextPaint.textSize, mTextPaint)
+            }
         }
 
         override fun onVisibilityChanged(visible: Boolean) {
