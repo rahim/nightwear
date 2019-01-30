@@ -42,6 +42,7 @@ class BloodGlucoseService(context: Context) {
 
     private fun refresh() {
         Log.d(TAG, "refresh")
+        Log.d(TAG, "Latest reading age: " + latestReadingAge().seconds)
 
         if (latestReadingAge() < SENSOR_REFRESH_INTERVAL) return
         if (Duration.between(lastRequestAdded, Instant.now()) < Duration.ofSeconds(30)) return
