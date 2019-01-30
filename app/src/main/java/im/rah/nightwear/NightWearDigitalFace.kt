@@ -212,6 +212,17 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
             if (!mAmbient) {
                 val readingAgeText = bloodGlucoseService.latestReadingAge().toMinutes().toString() + "m"
                 canvas.drawText(readingAgeText, mXOffset, mYOffset + mTextPaint.textSize, mTextPaint)
+
+                val now = System.currentTimeMillis()
+                mCalendar.timeInMillis = now
+
+                val timeText = String.format(
+                    "%02d:%02d:%02d",
+                    mCalendar.get(Calendar.HOUR),
+                    mCalendar.get(Calendar.MINUTE),
+                    mCalendar.get(Calendar.SECOND)
+                )
+                canvas.drawText(timeText, mXOffset, mYOffset + 2*mTextPaint.textSize, mTextPaint)
             }
         }
 
