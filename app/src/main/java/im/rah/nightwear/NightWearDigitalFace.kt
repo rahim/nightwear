@@ -218,7 +218,7 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
 
                 val timeText = String.format(
                     "%02d:%02d:%02d",
-                    mCalendar.get(Calendar.HOUR),
+                    mCalendar.get(Calendar.HOUR_OF_DAY),
                     mCalendar.get(Calendar.MINUTE),
                     mCalendar.get(Calendar.SECOND)
                 )
