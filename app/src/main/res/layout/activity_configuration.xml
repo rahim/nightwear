@@ -34,12 +34,10 @@
                     android:inputType="textPersonName"
                     android:text="domain"
                     android:ems="10"
-                    android:id="@+id/domain" android:textSize="10sp"/>
-            <AutoCompleteTextView
-                    android:text=""
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/tld"
-                    android:textSize="10sp"/>
+                    android:id="@+id/domain" android:textSize="10sp" android:hint="domain"/>
+            <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/tld"/>
         </LinearLayout>
 
     </FrameLayout>
