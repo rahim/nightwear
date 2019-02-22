@@ -1,9 +1,12 @@
 package im.rah.nightwear
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.wearable.activity.WearableActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.EditText
@@ -11,22 +14,27 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.AdapterView
 
-
-
 class ConfigurationActivity : WearableActivity() {
 
     companion object {
-        val TLDS = arrayOf("herokuapp.com", "azurewebsites.net")
+        const val TAG:String = "ConfigurationActivity"
+        private val TLDS = arrayOf("herokuapp.com", "azurewebsites.net")
+        private const val DEFAULT_URL = "https://domain.herokuapp.com"
     }
 
-    val scheme = "https://"
+    private val scheme = "https://"
 
-    lateinit var urlTextView:TextView
-    lateinit var domainEditText:EditText
-    lateinit var tldSpinner:Spinner
+    private lateinit var urlTextView:TextView
+    private lateinit var domainEditText:EditText
+    private lateinit var tldSpinner:Spinner
+
+    lateinit var prefs:SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        prefs = applicationContext.getSharedPreferences("nightwear", Context.MODE_PRIVATE)
+
         setContentView(R.layout.activity_configuration)
 
         tldSpinner = findViewById(R.id.tld)
@@ -48,28 +56,61 @@ class ConfigurationActivity : WearableActivity() {
         }
         domainEditText.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                refreshUrlText()
+                Log.d(TAG, "onTextChanged")
             }
 
             override fun afterTextChanged(s: Editable?) {
-
+                Log.d(TAG, "afterTextChanged")
+                refreshUrlText()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
+                Log.d(TAG, "beforeTextChanged")
             }
         })
-        refreshUrlText()
+
+        loadUrlFromPrefs()
 
         // Enables Always-on
         setAmbientEnabled()
     }
 
-    fun refreshUrlText() {
-        urlTextView.text = url()
+    private fun loadUrlFromPrefs() {
+        val url = prefs.getString("nightscout-url", DEFAULT_URL)
+        val domain = domainFromUrl(url)
+        domainEditText.setText(domain)
+
+        val tld = tldFromUrl(url)
+        val adapter = tldSpinner.adapter as ArrayAdapter<String>
+        val tldPosition = adapter.getPosition(tld)
+        tldSpinner.setSelection(tldPosition)
     }
 
-    fun url() : String {
+    private fun domainFromUrl(url:String) : String {
+        val tld = tldFromUrl(url)
+        val tldStrippedUrl = if (tld.isNotBlank())
+                               url.replace(tld, "")
+                             else
+                               url
+        return tldStrippedUrl.replace(scheme, "").removeSuffix(".")
+    }
+
+    private fun tldFromUrl(url:String) : String {
+        for (tld in TLDS) if (url.endsWith(tld)) return tld
+        return ""
+    }
+
+    private fun refreshUrlText() {
+        val url = url()
+        if (urlTextView.text != url) {
+            urlTextView.text = url()
+            val edit = prefs.edit()
+            edit.putString("nightscout-url", url())
+            edit.apply()
+        }
+    }
+
+    private fun url() : String {
         return scheme + domainEditText.text + "." + tldSpinner.selectedItem
     }
 }
