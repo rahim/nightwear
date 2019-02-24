@@ -1,8 +1,8 @@
 package im.rah.nightwear
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.wearable.activity.WearableActivity
 import android.text.Editable
 import android.text.TextWatcher
@@ -28,12 +28,12 @@ class ConfigurationActivity : WearableActivity() {
     private lateinit var domainEditText:EditText
     private lateinit var tldSpinner:Spinner
 
-    lateinit var prefs:SharedPreferences
+    private lateinit var prefs:SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        prefs = applicationContext.getSharedPreferences("nightwear", Context.MODE_PRIVATE)
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         setContentView(R.layout.activity_configuration)
 
@@ -76,7 +76,7 @@ class ConfigurationActivity : WearableActivity() {
     }
 
     private fun loadUrlFromPrefs() {
-        val url = prefs.getString("nightscout-url", DEFAULT_URL)
+        val url = prefs.getString("nightscoutBaseUrl", DEFAULT_URL)
         val domain = domainFromUrl(url)
         domainEditText.setText(domain)
 
@@ -101,11 +101,16 @@ class ConfigurationActivity : WearableActivity() {
     }
 
     private fun refreshUrlText() {
+        Log.d(TAG, "refreshUrlText")
         val url = url()
         if (urlTextView.text != url) {
-            urlTextView.text = url()
+            Log.d(TAG, "updating urlTextView")
+            urlTextView.text = url
+        }
+        if (prefs.getString("nighscoutBaseUrl", "") != url) {
+            Log.d(TAG, "updating nighscoutBaseUrl pref")
             val edit = prefs.edit()
-            edit.putString("nightscout-url", url())
+            edit.putString("nightscoutBaseUrl", url())
             edit.apply()
         }
     }

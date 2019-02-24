@@ -1,6 +1,8 @@
 package im.rah.nightwear
 
 import android.content.Context
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -12,19 +14,24 @@ import java.time.Instant
 import java.util.*
 import kotlin.concurrent.schedule
 
-class BloodGlucoseService(context: Context) {
-    var nightscoutUrl = "https://hugo-ns.herokuapp.com/api/v1/entries/current"
-    private val requestQueue: RequestQueue = Volley.newRequestQueue(context)
+class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
     var latestBg:BloodGlucose? = null
-    var lastRequestAdded:Instant = Instant.EPOCH
+
+    private var nightscoutBaseUrl = ""
+    private val requestQueue: RequestQueue = Volley.newRequestQueue(context)
+    private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private var lastRequestAdded:Instant = Instant.EPOCH
 
     companion object {
         const val TAG:String = "BloodGlucoseService"
         val SENSOR_REFRESH_INTERVAL:Duration = Duration.ofMinutes(5)
+
+        const val NS_CURRENT_ENTRY_PATH = "/api/v1/entries/current"
     }
 
     init {
         Log.d(TAG, "initing")
+        prefs.registerOnSharedPreferenceChangeListener(this)
         Timer().schedule(0, 1000 * 15) { refresh() }
     }
 
@@ -40,17 +47,28 @@ class BloodGlucoseService(context: Context) {
         }
     }
 
+    override fun onSharedPreferenceChanged(prefs: SharedPreferences, s: String) {
+        Log.d(TAG, "prefs changed")
+        nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")
+    }
+
+    private fun nsCurrentEntryUrl() : String {
+        return nightscoutBaseUrl + NS_CURRENT_ENTRY_PATH
+    }
+
     private fun refresh() {
         Log.d(TAG, "refresh")
         Log.d(TAG, "Latest reading age: " + latestReadingAge().seconds)
+        Log.d(TAG, "nightscoutBaseUrl: " + nightscoutBaseUrl)
 
+        if (nightscoutBaseUrl == "") return
         if (latestReadingAge() < SENSOR_REFRESH_INTERVAL) return
         if (Duration.between(lastRequestAdded, Instant.now()) < Duration.ofSeconds(30)) return
 
         Log.d(TAG, "requesting")
         lastRequestAdded = Instant.now()
         val stringRequest = StringRequest(
-            Request.Method.GET, nightscoutUrl,
+            Request.Method.GET, nsCurrentEntryUrl(),
             Response.Listener<String> { response ->
                 Log.d(TAG, "bg received, parsing...")
                 latestBg = BloodGlucose.parse_tab_separated_current(response)
