@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wear.widget.BoxInsetLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@color/dark_grey"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ConfigurationActivity"
+        tools:deviceIds="wear"
+        android:padding="@dimen/box_inset_layout_padding">
+
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/inner_frame_layout_padding"
+            app:boxedEdges="all">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="142dp">
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/url_label"
+                    android:text="Nightscout domain"
+                    android:textSize="8sp" android:textAlignment="center"/>
+            <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/url" android:text="https://"
+                    android:textSize="8sp" android:textAlignment="center" android:textStyle="bold"/>
+            <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPersonName"
+                    android:text="domain"
+                    android:ems="10"
+                    android:id="@+id/domain" android:textSize="10sp" android:hint="domain"/>
+            <Spinner
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/tld"/>
+            <Button
+                    android:text="Save domain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/save_button"
+                    android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
+                    android:textSize="10sp" style="@android:style/Widget.Material.Button.Small"/>
+        </LinearLayout>
+
+    </FrameLayout>
+</android.support.wear.widget.BoxInsetLayout>

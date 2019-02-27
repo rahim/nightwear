@@ -3,11 +3,11 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="im.rah.nightwear">
 
+
     <uses-feature android:name="android.hardware.type.watch"/>
 
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-
     <!-- Required for complications to receive complication data and open the provider chooser. -->
     <uses-permission android:name="com.google.android.wearable.permission.RECEIVE_COMPLICATION_DATA"/>
 
@@ -21,6 +21,7 @@
         <uses-library
                 android:name="com.google.android.wearable"
                 android:required="true"/>
+
         <!--
                Set to true if your app is Standalone, that is, it does not require the handheld
                app to run.
@@ -28,6 +29,23 @@
         <meta-data
                 android:name="com.google.android.wearable.standalone"
                 android:value="true"/>
+
+        <activity
+                android:name=".ConfigurationActivity"
+                android:label="@string/title_activity_configuration">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="im.rah.nightwear.CONFIG" />
+                <category android:name=
+                                  "com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity
                 android:name=".MainHelloActivity"
@@ -56,6 +74,9 @@
             <meta-data
                     android:name="com.google.android.wearable.watchface.preview_circular"
                     android:resource="@drawable/preview_circle"/>
+            <meta-data
+                    android:name="com.google.android.wearable.watchface.wearableConfigurationAction"
+                    android:value="im.rah.nightwear.CONFIG"/>
 
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService"/>
