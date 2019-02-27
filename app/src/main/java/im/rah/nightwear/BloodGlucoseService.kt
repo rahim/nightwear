@@ -20,7 +20,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
 
     private var nightscoutBaseUrl = ""
     private val requestQueue: RequestQueue = Volley.newRequestQueue(context)
-    private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    lateinit private var prefs: SharedPreferences
     private var lastRequestAdded:Instant = Instant.EPOCH
 
     companion object {
@@ -32,7 +32,10 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
 
     init {
         Log.d(TAG, "initing")
+        prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
         prefs.registerOnSharedPreferenceChangeListener(this)
+        nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")
+
         Timer().schedule(0, 1000 * 15) { refresh() }
     }
 

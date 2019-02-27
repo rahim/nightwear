@@ -33,7 +33,7 @@ class ConfigurationActivity : WearableActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
 
         setContentView(R.layout.activity_configuration)
 
