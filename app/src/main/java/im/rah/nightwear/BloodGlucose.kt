@@ -1,6 +1,8 @@
 package im.rah.nightwear
 
+import java.lang.Exception
 import java.text.DecimalFormat
+import java.text.ParseException
 import java.time.Duration
 import java.time.Instant
 
@@ -22,17 +24,23 @@ class BloodGlucose(val glucoseLevel_mgdl : Int, val sensorTime : Long, val direc
     companion object {
         const val MMOLL_TO_MGDL = 18.0182
 
-        @JvmStatic fun parse_tab_separated_current(str : String) : BloodGlucose {
-            // example "2019-01-07T21:20:50.000Z	1546896050000\t109\tFlat\tshare2"
-            // ISO8601 datetime with timezone,
-            // unix timestamp with milliseconds
-            // sensor glucose value in mg/dL
-            // direction, see https://github.com/ktind/sgvdata/blob/master/lib/utils.js#L9 for possible values
-            val parts = str.split("\t")
-            val sensorTime: Long = parts[1].toLong()
-            val glucoseLevel = parts[2].toInt()
-            val direction = Direction.valueOf(parts[3])
-            return BloodGlucose(glucoseLevel, sensorTime, direction)
+        @Throws(ParseException::class)
+        @JvmStatic fun parseTabSeparatedCurrent(str : String) : BloodGlucose? {
+            try {
+                // example "2019-01-07T21:20:50.000Z	1546896050000\t109\tFlat\tshare2"
+                // ISO8601 datetime with timezone,
+                // unix timestamp with milliseconds
+                // sensor glucose value in mg/dL
+                // direction, see https://github.com/ktind/sgvdata/blob/master/lib/utils.js#L9 for possible values
+                val parts = str.split("\t")
+                val sensorTime: Long = parts[1].toLong()
+                val glucoseLevel = parts[2].toInt()
+                val direction = Direction.valueOf(parts[3])
+                return BloodGlucose(glucoseLevel, sensorTime, direction)
+            }
+            catch (e: Exception) {
+                throw ParseException(str, 0)
+            }
         }
 
         fun glucose(mgdl : Int, mmol : Boolean = true) : String {

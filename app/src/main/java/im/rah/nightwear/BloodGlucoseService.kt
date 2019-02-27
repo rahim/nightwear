@@ -9,6 +9,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import java.text.ParseException
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -71,7 +72,12 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
             Request.Method.GET, nsCurrentEntryUrl(),
             Response.Listener<String> { response ->
                 Log.d(TAG, "bg received, parsing...")
-                latestBg = BloodGlucose.parse_tab_separated_current(response)
+                try {
+                    latestBg = BloodGlucose.parseTabSeparatedCurrent(response)
+                }
+                catch (e: ParseException) {
+                    Log.d(TAG, "ParseException for response: " + response)
+                }
             },
             Response.ErrorListener {
                 Log.d(TAG, "request error")
