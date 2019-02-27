@@ -12,17 +12,18 @@
 
     <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="@dimen/inner_frame_layout_padding"
             app:boxedEdges="all">
 
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="142dp">
             <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/url_label" android:text="Nightscout domain"
+                    android:layout_height="wrap_content" android:id="@+id/url_label"
+                    android:text="Nightscout domain"
                     android:textSize="8sp" android:textAlignment="center"/>
             <TextView
                     android:layout_width="match_parent"
@@ -38,6 +39,12 @@
             <Spinner
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/tld"/>
+            <Button
+                    android:text="Save domain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/save_button"
+                    android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
+                    android:textSize="10sp" style="@android:style/Widget.Material.Button.Small"/>
         </LinearLayout>
 
     </FrameLayout>

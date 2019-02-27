@@ -8,11 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.AdapterView
+import android.widget.*
 
 class ConfigurationActivity : WearableActivity() {
 
@@ -27,6 +23,7 @@ class ConfigurationActivity : WearableActivity() {
     private lateinit var urlTextView:TextView
     private lateinit var domainEditText:EditText
     private lateinit var tldSpinner:Spinner
+    private lateinit var saveButton:Button
 
     private lateinit var prefs:SharedPreferences
 
@@ -69,6 +66,9 @@ class ConfigurationActivity : WearableActivity() {
             }
         })
 
+        saveButton = findViewById(R.id.save_button)
+        saveButton.setOnClickListener { persistUrl() }
+
         loadUrlFromPrefs()
 
         // Enables Always-on
@@ -107,6 +107,11 @@ class ConfigurationActivity : WearableActivity() {
             Log.d(TAG, "updating urlTextView")
             urlTextView.text = url
         }
+    }
+
+    private fun persistUrl() {
+        Log.d(TAG, "persistUrl")
+        val url = url()
         if (prefs.getString("nighscoutBaseUrl", "") != url) {
             Log.d(TAG, "updating nighscoutBaseUrl pref")
             val edit = prefs.edit()
