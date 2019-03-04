@@ -53,7 +53,8 @@
                         android:id="@+id/domain" android:textSize="12sp" android:hint="domain"/>
                 <Spinner
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:id="@+id/tld"/>
+                        android:layout_height="wrap_content" android:id="@+id/tld" android:spinnerMode="dialog"
+                />
                 <Button
                         android:text="Save domain"
                         android:layout_width="match_parent"

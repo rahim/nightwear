@@ -14,7 +14,7 @@ class ConfigurationActivity : WearableActivity() {
 
     companion object {
         const val TAG:String = "ConfigurationActivity"
-        private val TLDS = arrayOf("herokuapp.com", "azurewebsites.net")
+        private val COMMON_TLDS = arrayOf("herokuapp.com", "azurewebsites.net")
         private const val DEFAULT_URL = "https://domain.herokuapp.com"
     }
 
@@ -36,7 +36,8 @@ class ConfigurationActivity : WearableActivity() {
         setContentView(R.layout.activity_configuration)
 
         tldSpinner = findViewById(R.id.tld)
-        ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, TLDS).also { adapter ->
+        val tldOptions = COMMON_TLDS + arrayOf("[other]")
+        ArrayAdapter(this, R.layout.centered_spinner_dropdown_item, tldOptions).also { adapter ->
             tldSpinner.adapter = adapter
         }
 
@@ -106,7 +107,7 @@ class ConfigurationActivity : WearableActivity() {
     }
 
     private fun tldFromUrl(url:String) : String {
-        for (tld in TLDS) if (url.endsWith(tld)) return tld
+        for (tld in COMMON_TLDS) if (url.endsWith(tld)) return tld
         return ""
     }
 
@@ -138,6 +139,10 @@ class ConfigurationActivity : WearableActivity() {
     }
 
     private fun url() : String {
-        return scheme + domainEditText.text + "." + tldSpinner.selectedItem
+        return if (tldSpinner.selectedItem in COMMON_TLDS) {
+            scheme + domainEditText.text + "." + tldSpinner.selectedItem
+        } else {
+            scheme + domainEditText.text
+        }
     }
 }
