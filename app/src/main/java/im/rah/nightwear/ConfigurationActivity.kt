@@ -24,6 +24,7 @@ class ConfigurationActivity : WearableActivity() {
     private lateinit var domainEditText:EditText
     private lateinit var tldSpinner:Spinner
     private lateinit var saveButton:Button
+    private lateinit var unitToggleButton:ToggleButton
 
     private lateinit var prefs:SharedPreferences
 
@@ -69,7 +70,11 @@ class ConfigurationActivity : WearableActivity() {
         saveButton = findViewById(R.id.save_button)
         saveButton.setOnClickListener { persistUrl() }
 
+        unitToggleButton = findViewById(R.id.unit_toggle_button)
+        unitToggleButton.setOnClickListener { persistUnit() }
+
         loadUrlFromPrefs()
+        loadUnitFromPrefs()
 
         // Enables Always-on
         setAmbientEnabled()
@@ -84,6 +89,11 @@ class ConfigurationActivity : WearableActivity() {
         val adapter = tldSpinner.adapter as ArrayAdapter<String>
         val tldPosition = adapter.getPosition(tld)
         tldSpinner.setSelection(tldPosition)
+    }
+
+    private fun loadUnitFromPrefs() {
+        val mmol = prefs.getBoolean("mmol", true)
+        unitToggleButton.isChecked = mmol
     }
 
     private fun domainFromUrl(url:String) : String {
@@ -118,6 +128,13 @@ class ConfigurationActivity : WearableActivity() {
             edit.putString("nightscoutBaseUrl", url())
             edit.apply()
         }
+    }
+
+    private fun persistUnit() {
+        Log.d(TAG, "persistUnit")
+        val edit = prefs.edit()
+        edit.putBoolean("mmol", unitToggleButton.isChecked)
+        edit.apply()
     }
 
     private fun url() : String {
