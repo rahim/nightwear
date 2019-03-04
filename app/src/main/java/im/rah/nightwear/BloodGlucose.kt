@@ -55,7 +55,8 @@ class BloodGlucose(val glucoseLevel_mgdl : Int, val sensorTime : Long, val direc
 
     fun glucose(mmol : Boolean = true) = BloodGlucose.glucose(glucoseLevel_mgdl, mmol)
     fun directionLabel() = direction.label
-    override fun toString() = glucose() + " " + directionLabel()
+    fun combinedString(mmol : Boolean = true) = glucose(mmol) + " " + directionLabel()
+    override fun toString() = combinedString()
 
     fun sensorTimeInstant() = Instant.ofEpochMilli(sensorTime)
     fun readingAge() = Duration.between(sensorTimeInstant(), Instant.now())

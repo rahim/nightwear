@@ -20,7 +20,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
 
     private var nightscoutBaseUrl = ""
     private val requestQueue: RequestQueue = Volley.newRequestQueue(context)
-    lateinit private var prefs: SharedPreferences
+    private var prefs: SharedPreferences
     private var lastRequestAdded:Instant = Instant.EPOCH
 
     companion object {
@@ -51,9 +51,11 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         }
     }
 
-    override fun onSharedPreferenceChanged(prefs: SharedPreferences, s: String) {
+    override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
         Log.d(TAG, "prefs changed")
-        nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")
+        if (key == "nightscoutBaseUrl") {
+          nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")
+        }
     }
 
     private fun nsCurrentEntryUrl() : String {

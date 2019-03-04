@@ -1,9 +1,6 @@
 package im.rah.nightwear
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -12,13 +9,13 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.preference.PreferenceManager
 import android.support.v4.content.ContextCompat
 import android.support.wearable.watchface.CanvasWatchFaceService
 import android.support.wearable.watchface.WatchFaceService
 import android.support.wearable.watchface.WatchFaceStyle
 import android.view.SurfaceHolder
 import android.view.WindowInsets
-import android.widget.Toast
 
 import java.lang.ref.WeakReference
 import java.util.Calendar
@@ -74,9 +71,9 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
         }
     }
 
-    inner class Engine : CanvasWatchFaceService.Engine() {
-
-        private lateinit var mCalendar: Calendar
+    inner class Engine : CanvasWatchFaceService.Engine(), SharedPreferences.OnSharedPreferenceChangeListener {
+        private var mPrefs: SharedPreferences
+        private var mCalendar: Calendar
 
         private var mRegisteredTimeZoneReceiver = false
 
@@ -93,6 +90,14 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
         private var mLowBitAmbient: Boolean = false
         private var mBurnInProtection: Boolean = false
         private var mAmbient: Boolean = false
+        private var mMmol: Boolean
+
+        init {
+            mCalendar = Calendar.getInstance()
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+            mPrefs.registerOnSharedPreferenceChangeListener(this)
+            mMmol = mPrefs.getBoolean("mmol", true)
+        }
 
         private val mUpdateTimeHandler: Handler = EngineHandler(this)
 
@@ -103,8 +108,6 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
             }
         }
 
-//        private lateinit var mBloodGlucoseService: BloodGlucoseService
-
         override fun onCreate(holder: SurfaceHolder) {
             super.onCreate(holder)
 
@@ -113,8 +116,6 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
                     .setAcceptsTapEvents(true)
                     .build()
             )
-
-            mCalendar = Calendar.getInstance()
 
             val resources = this@NightWearDigitalFace.resources
             mYOffset = resources.getDimension(R.dimen.digital_y_offset)
@@ -205,8 +206,7 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
                 return
             }
 
-
-            val bgText = bloodGlucoseService.latestBg.toString()
+            val bgText = (bloodGlucoseService.latestBg as BloodGlucose).combinedString(mMmol)
             canvas.drawText(bgText, mXOffset, mYOffset, mTextPaint)
 
             if (!mAmbient) {
@@ -242,6 +242,10 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
             // Whether the timer should be running depends on whether we're visible (as well as
             // whether we're in ambient mode), so we may need to start or stop the timer.
             updateTimer()
+        }
+
+        override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
+            if (key == "mmol") mMmol = prefs.getBoolean("mmol", true)
         }
 
         private fun registerReceiver() {
