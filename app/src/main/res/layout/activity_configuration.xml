@@ -10,17 +10,16 @@
         tools:deviceIds="wear"
         android:padding="@dimen/box_inset_layout_padding">
 
-    <FrameLayout
+    <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/inner_frame_layout_padding"
-            app:boxedEdges="all">
-
-        <ScrollView
+            android:layout_height="match_parent">
+        <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
+
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                          android:orientation="vertical">
+                          android:orientation="vertical" android:paddingLeft="20sp" android:paddingRight="20sp"
+                          android:paddingTop="30sp" android:paddingBottom="30sp">
                 <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" android:id="@+id/bg_units_label"
@@ -33,15 +32,9 @@
                         android:textOff="mg/dl" android:textOn="mmol/L" android:checked="true"
                         android:textAppearance="@android:style/TextAppearance.Material.Small"
                         style="@android:style/Widget.Material.Button.Toggle" android:textSize="12sp"/>
-                <View
-                        android:id="@+id/divider"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="?android:attr/listDivider"
-                />
                 <Space
                         android:layout_width="match_parent"
-                        android:layout_height="10sp"/>
+                        android:layout_height="16sp"/>
                 <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" android:id="@+id/url_label"
@@ -68,7 +61,6 @@
                         android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
                         android:textSize="10sp" style="@android:style/Widget.Material.Button.Small"/>
             </LinearLayout>
-        </ScrollView>
-
-    </FrameLayout>
+        </FrameLayout>
+    </ScrollView>
 </android.support.wear.widget.BoxInsetLayout>

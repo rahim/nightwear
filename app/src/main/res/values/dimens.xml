@@ -11,7 +11,7 @@
     and the window insets is box_inset_layout_padding (above variable) on square screens and
     inner_frame_layout_padding (below variable) on round screens.
     -->
-    <dimen name="inner_frame_layout_padding">5dp</dimen>
+    <dimen name="inner_frame_layout_padding">0dp</dimen>
     <dimen name="digital_text_size">25dp</dimen>
     <dimen name="digital_text_size_round">25dp</dimen>
     <dimen name="digital_x_offset">15dp</dimen>
