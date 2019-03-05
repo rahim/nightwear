@@ -22,16 +22,8 @@ import java.util.Calendar
 import java.util.TimeZone
 
 /**
- * Digital watch face with seconds. In ambient mode, the seconds aren't displayed. On devices with
- * low-bit ambient mode, the text is drawn without anti-aliasing in ambient mode.
- *
- *
- * Important Note: Because watch face apps do not have a default Activity in
- * their project, you will need to set your Configurations to
- * "Do not launch Activity" for both the Wear and/or Application modules. If you
- * are unsure how to do this, please review the "Run Starter project" section
- * in the Google Watch Face Code Lab:
- * https://codelabs.developers.google.com/codelabs/watchface/index.html#0
+ * Minimal NightScout blood glucose display with direction.
+ * In non-ambient mode, the reading age and an ISO 8601 style time is also shown.
  */
 class NightWearDigitalFace : CanvasWatchFaceService() {
 
