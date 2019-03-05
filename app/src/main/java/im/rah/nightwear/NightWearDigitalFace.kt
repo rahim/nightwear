@@ -169,27 +169,6 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
             updateTimer()
         }
 
-        /**
-         * Captures tap event (and tap type) and toggles the background color if the user finishes
-         * a tap.
-         */
-        override fun onTapCommand(tapType: Int, x: Int, y: Int, eventTime: Long) {
-            when (tapType) {
-                WatchFaceService.TAP_TYPE_TOUCH -> {
-                    // The user has started touching the screen.
-                }
-                WatchFaceService.TAP_TYPE_TOUCH_CANCEL -> {
-                    // The user has started a different gesture or otherwise cancelled the tap.
-                }
-                WatchFaceService.TAP_TYPE_TAP -> {
-                    // The user has completed the tap gesture.
-//                    Toast.makeText(applicationContext, R.string.message, Toast.LENGTH_SHORT)
-//                        .show()
-                }
-            }
-            invalidate()
-        }
-
         override fun onDraw(canvas: Canvas, bounds: Rect) {
             // Draw the background.
             if (mAmbient) {
