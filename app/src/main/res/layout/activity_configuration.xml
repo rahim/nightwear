@@ -10,42 +10,58 @@
         tools:deviceIds="wear"
         android:padding="@dimen/box_inset_layout_padding">
 
-    <FrameLayout
+    <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/inner_frame_layout_padding"
-            app:boxedEdges="all">
-
-        <LinearLayout
-                android:orientation="vertical"
+            android:layout_height="match_parent">
+        <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="142dp">
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/url_label"
-                    android:text="Nightscout domain"
-                    android:textSize="8sp" android:textAlignment="center"/>
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/url" android:text="https://"
-                    android:textSize="8sp" android:textAlignment="center" android:textStyle="bold"/>
-            <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:text="domain"
-                    android:ems="10"
-                    android:id="@+id/domain" android:textSize="10sp" android:hint="domain"/>
-            <Spinner
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/tld"/>
-            <Button
-                    android:text="Save domain"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:id="@+id/save_button"
-                    android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
-                    android:textSize="10sp" style="@android:style/Widget.Material.Button.Small"/>
-        </LinearLayout>
+                android:layout_height="wrap_content">
 
-    </FrameLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                          android:orientation="vertical" android:paddingLeft="20sp" android:paddingRight="20sp"
+                          android:paddingTop="30sp" android:paddingBottom="30sp">
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/bg_units_label"
+                        android:text="Units"
+                        android:textSize="12sp" android:textAlignment="center"/>
+                <ToggleButton
+                        android:text="Units"
+                        android:layout_width="match_parent"
+                        android:layout_height="40sp" android:id="@+id/unit_toggle_button"
+                        android:textOff="mg/dl" android:textOn="mmol/L" android:checked="true"
+                        android:textAppearance="@android:style/TextAppearance.Material.Small"
+                        style="@android:style/Widget.Material.Button.Toggle" android:textSize="12sp"/>
+                <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="16sp"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/url_label"
+                        android:text="Nightscout domain"
+                        android:textSize="12sp" android:textAlignment="center"/>
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/url" android:text="https://"
+                        android:textSize="12sp" android:textAlignment="center" android:textStyle="bold"/>
+                <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:text="domain"
+                        android:ems="10"
+                        android:id="@+id/domain" android:textSize="12sp" android:hint="domain"/>
+                <Spinner
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/tld" android:spinnerMode="dialog"
+                />
+                <Button
+                        android:text="Save domain"
+                        android:layout_width="match_parent"
+                        android:layout_height="40sp" android:id="@+id/save_button"
+                        android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
+                        android:textSize="10sp" style="@android:style/Widget.Material.Button.Small"/>
+            </LinearLayout>
+        </FrameLayout>
+    </ScrollView>
 </android.support.wear.widget.BoxInsetLayout>

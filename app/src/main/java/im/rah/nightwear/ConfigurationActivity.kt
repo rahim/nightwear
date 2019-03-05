@@ -14,7 +14,7 @@ class ConfigurationActivity : WearableActivity() {
 
     companion object {
         const val TAG:String = "ConfigurationActivity"
-        private val TLDS = arrayOf("herokuapp.com", "azurewebsites.net")
+        private val COMMON_TLDS = arrayOf("herokuapp.com", "azurewebsites.net")
         private const val DEFAULT_URL = "https://domain.herokuapp.com"
     }
 
@@ -24,6 +24,7 @@ class ConfigurationActivity : WearableActivity() {
     private lateinit var domainEditText:EditText
     private lateinit var tldSpinner:Spinner
     private lateinit var saveButton:Button
+    private lateinit var unitToggleButton:ToggleButton
 
     private lateinit var prefs:SharedPreferences
 
@@ -35,7 +36,8 @@ class ConfigurationActivity : WearableActivity() {
         setContentView(R.layout.activity_configuration)
 
         tldSpinner = findViewById(R.id.tld)
-        ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, TLDS).also { adapter ->
+        val tldOptions = COMMON_TLDS + arrayOf("[other]")
+        ArrayAdapter(this, R.layout.centered_spinner_dropdown_item, tldOptions).also { adapter ->
             tldSpinner.adapter = adapter
         }
 
@@ -69,7 +71,11 @@ class ConfigurationActivity : WearableActivity() {
         saveButton = findViewById(R.id.save_button)
         saveButton.setOnClickListener { persistUrl() }
 
+        unitToggleButton = findViewById(R.id.unit_toggle_button)
+        unitToggleButton.setOnClickListener { persistUnit() }
+
         loadUrlFromPrefs()
+        loadUnitFromPrefs()
 
         // Enables Always-on
         setAmbientEnabled()
@@ -86,6 +92,11 @@ class ConfigurationActivity : WearableActivity() {
         tldSpinner.setSelection(tldPosition)
     }
 
+    private fun loadUnitFromPrefs() {
+        val mmol = prefs.getBoolean("mmol", true)
+        unitToggleButton.isChecked = mmol
+    }
+
     private fun domainFromUrl(url:String) : String {
         val tld = tldFromUrl(url)
         val tldStrippedUrl = if (tld.isNotBlank())
@@ -96,7 +107,7 @@ class ConfigurationActivity : WearableActivity() {
     }
 
     private fun tldFromUrl(url:String) : String {
-        for (tld in TLDS) if (url.endsWith(tld)) return tld
+        for (tld in COMMON_TLDS) if (url.endsWith(tld)) return tld
         return ""
     }
 
@@ -120,7 +131,18 @@ class ConfigurationActivity : WearableActivity() {
         }
     }
 
+    private fun persistUnit() {
+        Log.d(TAG, "persistUnit")
+        val edit = prefs.edit()
+        edit.putBoolean("mmol", unitToggleButton.isChecked)
+        edit.apply()
+    }
+
     private fun url() : String {
-        return scheme + domainEditText.text + "." + tldSpinner.selectedItem
+        return if (tldSpinner.selectedItem in COMMON_TLDS) {
+            scheme + domainEditText.text + "." + tldSpinner.selectedItem
+        } else {
+            scheme + domainEditText.text
+        }
     }
 }
