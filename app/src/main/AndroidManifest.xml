@@ -13,7 +13,6 @@
 
     <application
             android:allowBackup="true"
-            android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:supportsRtl="true"
             android:theme="@android:style/Theme.DeviceDefault"
@@ -22,10 +21,6 @@
                 android:name="com.google.android.wearable"
                 android:required="true"/>
 
-        <!--
-               Set to true if your app is Standalone, that is, it does not require the handheld
-               app to run.
-        -->
         <meta-data
                 android:name="com.google.android.wearable.standalone"
                 android:value="true"/>
@@ -34,26 +29,10 @@
                 android:name=".ConfigurationActivity"
                 android:label="@string/title_activity_configuration">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-
-            <intent-filter>
                 <action android:name="im.rah.nightwear.CONFIG" />
                 <category android:name=
                                   "com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
                 <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <activity
-                android:name=".MainHelloActivity"
-                android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 

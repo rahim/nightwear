@@ -22,16 +22,8 @@ import java.util.Calendar
 import java.util.TimeZone
 
 /**
- * Digital watch face with seconds. In ambient mode, the seconds aren't displayed. On devices with
- * low-bit ambient mode, the text is drawn without anti-aliasing in ambient mode.
- *
- *
- * Important Note: Because watch face apps do not have a default Activity in
- * their project, you will need to set your Configurations to
- * "Do not launch Activity" for both the Wear and/or Application modules. If you
- * are unsure how to do this, please review the "Run Starter project" section
- * in the Google Watch Face Code Lab:
- * https://codelabs.developers.google.com/codelabs/watchface/index.html#0
+ * Minimal NightScout blood glucose display with direction.
+ * In non-ambient mode, the reading age and an ISO 8601 style time is also shown.
  */
 class NightWearDigitalFace : CanvasWatchFaceService() {
 
@@ -167,27 +159,6 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
             // Whether the timer should be running depends on whether we're visible (as well as
             // whether we're in ambient mode), so we may need to start or stop the timer.
             updateTimer()
-        }
-
-        /**
-         * Captures tap event (and tap type) and toggles the background color if the user finishes
-         * a tap.
-         */
-        override fun onTapCommand(tapType: Int, x: Int, y: Int, eventTime: Long) {
-            when (tapType) {
-                WatchFaceService.TAP_TYPE_TOUCH -> {
-                    // The user has started touching the screen.
-                }
-                WatchFaceService.TAP_TYPE_TOUCH_CANCEL -> {
-                    // The user has started a different gesture or otherwise cancelled the tap.
-                }
-                WatchFaceService.TAP_TYPE_TAP -> {
-                    // The user has completed the tap gesture.
-//                    Toast.makeText(applicationContext, R.string.message, Toast.LENGTH_SHORT)
-//                        .show()
-                }
-            }
-            invalidate()
         }
 
         override fun onDraw(canvas: Canvas, bounds: Rect) {
