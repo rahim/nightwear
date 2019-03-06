@@ -1,4 +1,4 @@
-# nightwear
+# NightWear
 
 A minimal standalone [Wear OS 2.0](https://wearos.google.com) watchface to follow blood glucose data from [NightScout](http://www.nightscout.info/).
 
