@@ -12,6 +12,6 @@ The main reason this project exists is to utilise Wear 2.0's [standalone app](ht
 
 This is useful because it means:
 - a Wear 2.0 watch can be paired with an iPhone and still be usable as a NightScout display, utilising the phone's data connection when necessary
-- a Wear 2.0 watch can be used as a NightScout display away from it's paired phone (Android or iPhone) wherever it has a working internet connection (wifi or integrated cellular)
+- a Wear 2.0 watch can be used as a NightScout display away from its paired phone (Android or iPhone) wherever it has a working internet connection (wifi or integrated cellular)
 
 The watch face can be installed and configured entirely on the watch itself.
