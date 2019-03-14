@@ -2,9 +2,7 @@
 
 A minimal standalone [Wear OS 2.0](https://wearos.google.com) watch face to follow blood glucose data from [NightScout](http://www.nightscout.info/).
 
-![](/app/src/main/res/drawable-nodpi/preview_circle.png)
-
-![](/app/src/main/res/drawable-nodpi/preview_square.png)
+<img src="/app/src/main/res/drawable-nodpi/preview_circle.png" width="310" height="310"> <img src="/app/src/main/res/drawable-nodpi/preview_square.png" width="310" height="310">
 
 We already have numerous [CGM watch face options](http://www.nightscout.info/wiki/cgm-watchfaces) across the various smartwatch platforms, including [NightWatch](https://github.com/StephenBlackWasAlreadyTaken/NightWatch) and [xDrip+](https://github.com/NightscoutFoundation/xDrip) on Android that provide featureful Wear OS watch faces when installed alongside their companion Android phone applications.
 
