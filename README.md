@@ -2,6 +2,8 @@
 
 A minimal standalone [Wear OS 2.0](https://wearos.google.com) watch face to follow blood glucose data from [NightScout](http://www.nightscout.info/).
 
+<img src="/assets/photo/7II02989_1024x500.jpg">
+
 <a href='https://play.google.com/store/apps/details?id=im.rah.nightwear&utm_source=github&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_gb/badges/images/generic/en_badge_web_generic.png' width="200"/></a>
 
 <img src="/app/src/main/res/drawable-nodpi/preview_circle.png" width="310" height="310"> <img src="/app/src/main/res/drawable-nodpi/preview_square.png" width="310" height="310">
