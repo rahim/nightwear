@@ -32,7 +32,8 @@ class BloodGlucose(val glucoseLevel_mgdl : Int, val sensorTime : Long, val direc
                 // unix timestamp with milliseconds
                 // sensor glucose value in mg/dL
                 // direction, see https://github.com/ktind/sgvdata/blob/master/lib/utils.js#L9 for possible values
-                val parts = str.split("\t")
+                // In NightScout 0.11.1 we started seeing non-numeric fields wrapped in double quotes
+                val parts = str.split("\t").map { s -> s.removeSurrounding("\"") }
                 val sensorTime: Long = parts[1].toLong()
                 val glucoseLevel = parts[2].toInt()
                 val direction = Direction.valueOf(parts[3])
