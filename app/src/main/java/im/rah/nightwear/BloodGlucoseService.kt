@@ -68,10 +68,19 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         Log.d(TAG, "nightscoutBaseUrl: " + nightscoutBaseUrl)
 
         if (nightscoutBaseUrl == "") return
+        // remember: the lastReadingAge is not when we last successfully received a response
+        // the reading age reflects the last sensor reading we're aware of, that means:
+        // - it can grow if we've not made successful API requests (eg no net connection available)
+        // - it can grow if the sensor is not reporting or is in warm up
+        // - it can grow if the collector is unable to push to Share or NightScout
+        // - it can grow if NightScout is unable to pull from Share
         if (latestReadingAge() < SENSOR_REFRESH_INTERVAL) return
+        // don't make requests more than once every 30s
         if (Duration.between(lastRequestAdded, Instant.now()) < Duration.ofSeconds(30)) return
 
-        Log.d(TAG, "requesting")
+        Log.d(TAG, "clearing queue, then requesting")
+        requestQueue.cancelAll(this)
+
         lastRequestAdded = Instant.now()
         val stringRequest = StringRequest(
             Request.Method.GET, nsCurrentEntryUrl(),
@@ -87,6 +96,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
             Response.ErrorListener {
                 Log.d(TAG, "request error")
             })
+        stringRequest.tag = this
 
         // Add the request to the RequestQueue.
         requestQueue.add(stringRequest)
