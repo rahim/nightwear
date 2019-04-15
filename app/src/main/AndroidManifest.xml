@@ -70,10 +70,10 @@
                 android:icon="@drawable/baseline_invert_colors_white_18dp"
                 android:label="@string/complication_provider_name"
                 android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
-            <!--<intent-filter>-->
-                <!--<action-->
-                        <!--android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST"/>-->
-            <!--</intent-filter>-->
+            <intent-filter>
+                <action
+                        android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST"/>
+            </intent-filter>
             <meta-data
                     android:name="android.support.wearable.complications.SUPPORTED_TYPES"
                     android:value="SHORT_TEXT"/>
