@@ -17,6 +17,7 @@ import kotlin.concurrent.schedule
 
 class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
     var latestBg:BloodGlucose? = null
+    var onDataUpdate: ((BloodGlucose)->Unit)? = null
 
     private var nightscoutBaseUrl = ""
     private val requestQueue: RequestQueue = Volley.newRequestQueue(context)
@@ -31,7 +32,8 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
     }
 
     init {
-        Log.d(TAG, "initing")
+        Log.d(TAG, "initing: " + this.hashCode())
+        Log.d(TAG, "context: " + context.hashCode())
         prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
         prefs.registerOnSharedPreferenceChangeListener(this)
         nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")
@@ -63,7 +65,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
     }
 
     private fun refresh() {
-        Log.d(TAG, "refresh")
+        Log.d(TAG, "refresh: " + this.hashCode())
         Log.d(TAG, "Latest reading age: " + latestReadingAge().seconds)
         Log.d(TAG, "nightscoutBaseUrl: " + nightscoutBaseUrl)
 
@@ -88,6 +90,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
                 Log.d(TAG, "bg received, parsing...")
                 try {
                     latestBg = BloodGlucose.parseTabSeparatedCurrent(response)
+                    onDataUpdate?.invoke(latestBg!!)
                 }
                 catch (e: ParseException) {
                     Log.d(TAG, "ParseException for response: " + response)

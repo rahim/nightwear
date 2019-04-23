@@ -11,8 +11,17 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
     companion object {
         const val TAG: String = "NightWearComplicationProviderService"
     }
-    //invalid crashes out unable to getCacheDir
-    //private var bloodGlucoseService: BloodGlucoseService = BloodGlucoseService(this)
+    private lateinit var bloodGlucoseService: BloodGlucoseService
+
+    override fun onCreate() {
+        Log.d(TAG, "onCreate")
+        super.onCreate()
+
+        bloodGlucoseService = BloodGlucoseService(this.applicationContext)
+        bloodGlucoseService.onDataUpdate = { latestBg ->
+            Log.d(TAG, "onDataUpdate callback, latestBg: " + latestBg)
+        }
+    }
 
     override fun onComplicationUpdate(complicationId: Int, type: Int, manager: ComplicationManager) {
         if (type != ComplicationData.TYPE_SHORT_TEXT) {
@@ -21,15 +30,21 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
             return
         }
 
-//        var bg?
+        val latestBg = bloodGlucoseService.latestBg
+        val bgText:String
+        if (latestBg == null) {
+            bgText = "---"
+        } else {
+            bgText = latestBg.combinedString()
+        }
 
-        Log.d(TAG, "updating complication data")
+        Log.d(TAG, "updating complication data, bgText: " + bgText)
 
-        var data: ComplicationData =
+        val data: ComplicationData =
              ComplicationData.Builder(type)
                 .setShortText(
                     ComplicationText.plainText(
-                        "foo"
+                        bgText
                     )
                 )
                 .setIcon(
@@ -37,74 +52,17 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
                         this, R.drawable.baseline_invert_colors_white_18dp
                     )
                 ).setShortTitle(
-                    ComplicationText.plainText("bar")
+                    ComplicationText.plainText("BG")
                 )
                 .build()
-
-//        val thisProvider = ComponentName(this, javaClass)
-//        val complicationTogglePendingIntent =
-//            ComplicationToggleReceiver.getToggleIntent(this, thisProvider, complicationId)
-//
-//        val preferences = getSharedPreferences(ComplicationToggleReceiver.PREFERENCES_NAME, 0)
-//        val state = preferences.getInt(
-//            ComplicationToggleReceiver.getPreferenceKey(thisProvider, complicationId),
-//            0
-//        )
-
-//        var data: ComplicationData? = null
-//        when (state % 4) {
-//            0 -> data = ComplicationData.Builder(type)
-//                .setShortText(
-//                    ComplicationText.plainText(
-//                        getString(R.string.short_text_only)
-//                    )
-//                )
-//                .setTapAction(complicationTogglePendingIntent)
-//                .build()
-//            1 -> data = ComplicationData.Builder(type)
-//                .setShortText(
-//                    ComplicationText.plainText(
-//                        getString(R.string.short_text_with_icon)
-//                    )
-//                )
-//                .setIcon(
-//                    Icon.createWithResource(
-//                        this, R.drawable.ic_face_vd_theme_24
-//                    )
-//                )
-//                .setTapAction(complicationTogglePendingIntent)
-//                .build()
-//            2 -> data = ComplicationData.Builder(type)
-//                .setShortText(
-//                    ComplicationText.plainText(
-//                        getString(R.string.short_text_with_title)
-//                    )
-//                )
-//                .setShortTitle(
-//                    ComplicationText.plainText(getString(R.string.short_title))
-//                )
-//                .setTapAction(complicationTogglePendingIntent)
-//                .build()
-//            3 ->
-//                // When short text includes both short title and icon, the watch face should only
-//                // display one of those fields.
-//                data = ComplicationData.Builder(type)
-//                    .setShortText(
-//                        ComplicationText.plainText(
-//                            getString(R.string.short_text_with_both)
-//                        )
-//                    )
-//                    .setShortTitle(
-//                        ComplicationText.plainText(getString(R.string.short_title))
-//                    )
-//                    .setIcon(
-//                        Icon.createWithResource(
-//                            this, R.drawable.ic_face_vd_theme_24
-//                        )
-//                    )
-//                    .setTapAction(complicationTogglePendingIntent)
-//                    .build()
-//        }
         manager.updateComplicationData(complicationId, data)
+    }
+
+    override fun onComplicationActivated(complicationId: Int, type: Int, manager: ComplicationManager?) {
+        super.onComplicationActivated(complicationId, type, manager)
+    }
+
+    override fun onComplicationDeactivated(complicationId: Int) {
+        super.onComplicationDeactivated(complicationId)
     }
 }
