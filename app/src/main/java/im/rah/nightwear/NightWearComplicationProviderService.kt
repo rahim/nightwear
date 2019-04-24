@@ -29,13 +29,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
             return
         }
 
-        val latestBg = bloodGlucoseService.latestBg
-        val bgText:String
-        if (latestBg == null) {
-            bgText = "---"
-        } else {
-            bgText = latestBg.combinedString()
-        }
+        val bgText = bloodGlucoseService.latestBg?.combinedString() ?: "---"
 
         Log.d(TAG, "updating complication data, bgText: " + bgText)
 
