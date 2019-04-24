@@ -1,10 +1,7 @@
 package im.rah.nightwear
 
 import android.graphics.drawable.Icon
-import android.support.wearable.complications.ComplicationProviderService
-import android.support.wearable.complications.ComplicationText
-import android.support.wearable.complications.ComplicationData
-import android.support.wearable.complications.ComplicationManager
+import android.support.wearable.complications.*
 import android.util.Log
 
 class NightWearComplicationProviderService : ComplicationProviderService() {
@@ -16,14 +13,16 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
     override fun onCreate() {
         Log.d(TAG, "onCreate")
         super.onCreate()
-
-        bloodGlucoseService = BloodGlucoseService(this.applicationContext)
-        bloodGlucoseService.onDataUpdate = { latestBg ->
-            Log.d(TAG, "onDataUpdate callback, latestBg: " + latestBg)
-        }
     }
 
     override fun onComplicationUpdate(complicationId: Int, type: Int, manager: ComplicationManager) {
+        Log.d(TAG, "onComplicationUpdate")
+        if (!this::bloodGlucoseService.isInitialized) {
+            Log.d(TAG, "bloodGlucoseService not initialized")
+            manager.noUpdateRequired(complicationId)
+            return
+        }
+
         if (type != ComplicationData.TYPE_SHORT_TEXT) {
             Log.d(TAG, "unsupported complication data type requested")
             manager.noUpdateRequired(complicationId)
@@ -58,11 +57,20 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         manager.updateComplicationData(complicationId, data)
     }
 
-    override fun onComplicationActivated(complicationId: Int, type: Int, manager: ComplicationManager?) {
+    override fun onComplicationActivated(complicationId: Int, type: Int, manager: ComplicationManager) {
         super.onComplicationActivated(complicationId, type, manager)
+
+        Log.d(TAG, "onComplicationActivated")
+
+        bloodGlucoseService = BloodGlucoseService(this.applicationContext)
+        bloodGlucoseService.onDataUpdate = { latestBg ->
+            Log.d(TAG, "onDataUpdate callback, latestBg: " + latestBg)
+            this.onComplicationUpdate(complicationId, type, manager)
+        }
     }
 
     override fun onComplicationDeactivated(complicationId: Int) {
         super.onComplicationDeactivated(complicationId)
+        Log.d(TAG, "onComplicationDeactivated")
     }
 }
