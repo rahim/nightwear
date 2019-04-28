@@ -8,17 +8,19 @@ import java.time.Instant
 
 class BloodGlucose(val glucoseLevel_mgdl : Int, val sensorTime : Long, val direction : Direction) {
     // see also https://github.com/nightscout/cgm-remote-monitor/blob/11c6086678415883f7d7a110a032bb26a4be8543/lib/plugins/direction.js#L53
-    enum class Direction(val index : Int, val label : String) {
-        NONE(0, "⇼"),
-        DoubleUp(1, "⬆⬆"),
-        SingleUp(2, "⬆"),
-        FortyFiveUp(3, "⬈"),
-        Flat(4, "➡"),
-        FortyFiveDown(5, "⬊"),
-        SingleDown(6, "⬇"),
-        DoubleDown(7, "⬇⬇"),
-        NOT_COMPUTABLE(8, "-"),
-        RATE_OUT_OF_RANGE(9, "⇕")
+    enum class Direction(val label : String) {
+        NONE("⇼"),
+        TripleUp("⬆⬆⬆"),
+        DoubleUp("⬆⬆"),
+        SingleUp("⬆"),
+        FortyFiveUp( "⬈"),
+        Flat("➡"),
+        FortyFiveDown("⬊"),
+        SingleDown("⬇"),
+        DoubleDown("⬇⬇"),
+        TripleDown("⬇⬇⬇"),
+        NOT_COMPUTABLE("-"),
+        RATE_OUT_OF_RANGE("⇕")
     }
 
     companion object {
