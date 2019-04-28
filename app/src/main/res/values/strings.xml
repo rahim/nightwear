@@ -4,4 +4,5 @@
     <string name="my_digital_name">NightWear</string>
     <string name="title_activity_configuration">ConfigurationActivity</string>
     <string name="complication_provider_name">NightWear Blood Glucose</string>
+    <string name="complication_no_data">---</string>
 </resources>

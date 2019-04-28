@@ -17,11 +17,6 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
 
     override fun onComplicationUpdate(complicationId: Int, type: Int, manager: ComplicationManager) {
         Log.d(TAG, "onComplicationUpdate")
-        if (!this::bloodGlucoseService.isInitialized) {
-            Log.d(TAG, "bloodGlucoseService not initialized")
-            manager.noUpdateRequired(complicationId)
-            return
-        }
 
         if (type != ComplicationData.TYPE_SHORT_TEXT) {
             Log.d(TAG, "unsupported complication data type requested")
@@ -29,7 +24,16 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
             return
         }
 
-        val bgText = bloodGlucoseService.latestBg?.combinedString() ?: "---"
+        val bgText:String
+
+        if (this::bloodGlucoseService.isInitialized) {
+            bgText = bloodGlucoseService.latestBg?.combinedString() ?: getString(R.string.complication_no_data)
+        }
+        else {
+            Log.d(TAG, "bloodGlucoseService not initialized, initializing...")
+            initBloodGlucoseService(complicationId, type, manager)
+            bgText = getString(R.string.complication_no_data)
+        }
 
         Log.d(TAG, "updating complication data, bgText: " + bgText)
 
@@ -53,18 +57,21 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
 
     override fun onComplicationActivated(complicationId: Int, type: Int, manager: ComplicationManager) {
         super.onComplicationActivated(complicationId, type, manager)
-
         Log.d(TAG, "onComplicationActivated")
 
-        bloodGlucoseService = BloodGlucoseService(this.applicationContext)
-        bloodGlucoseService.onDataUpdate = { latestBg ->
-            Log.d(TAG, "onDataUpdate callback, latestBg: " + latestBg)
-            this.onComplicationUpdate(complicationId, type, manager)
-        }
+        initBloodGlucoseService(complicationId, type, manager)
     }
 
     override fun onComplicationDeactivated(complicationId: Int) {
         super.onComplicationDeactivated(complicationId)
         Log.d(TAG, "onComplicationDeactivated")
+    }
+
+    private fun initBloodGlucoseService(complicationId: Int, type: Int, manager: ComplicationManager) {
+        bloodGlucoseService = BloodGlucoseService(this.applicationContext)
+        bloodGlucoseService.onDataUpdate = { latestBg ->
+            Log.d(TAG, "onDataUpdate callback, latestBg: " + latestBg)
+            this.onComplicationUpdate(complicationId, type, manager)
+        }
     }
 }
