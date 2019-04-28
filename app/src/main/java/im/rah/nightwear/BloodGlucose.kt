@@ -38,7 +38,7 @@ class BloodGlucose(val glucoseLevel_mgdl : Int, val sensorTime : Long, val direc
                 val parts = str.split("\t").map { s -> s.removeSurrounding("\"") }
                 val sensorTime: Long = parts[1].toLong()
                 val glucoseLevel = parts[2].toInt()
-                val direction = Direction.valueOf(parts[3])
+                val direction = Direction.valueOf(parts[3].replace(" ","_"))
                 return BloodGlucose(glucoseLevel, sensorTime, direction)
             }
             catch (e: Exception) {
