@@ -8,11 +8,17 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
     companion object {
         const val TAG: String = "NightWearComplicationProviderService"
     }
-    private lateinit var bloodGlucoseService: BloodGlucoseService
+
+    private var initialized = false
 
     override fun onCreate() {
         Log.d(TAG, "onCreate")
         super.onCreate()
+    }
+
+    override fun onDestroy() {
+        Log.d(TAG, "onDestroy")
+        super.onDestroy()
     }
 
     override fun onComplicationUpdate(complicationId: Int, type: Int, manager: ComplicationManager) {
@@ -24,16 +30,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
             return
         }
 
-        val bgText:String
-
-        if (this::bloodGlucoseService.isInitialized) {
-            bgText = bloodGlucoseService.latestBg?.combinedString() ?: getString(R.string.complication_no_data)
-        }
-        else {
-            Log.d(TAG, "bloodGlucoseService not initialized, initializing...")
-            initBloodGlucoseService(complicationId, type, manager)
-            bgText = getString(R.string.complication_no_data)
-        }
+        val bgText = bloodGlucoseService.latestBg?.combinedString() ?: getString(R.string.complication_no_data)
 
         Log.d(TAG, "updating complication data, bgText: " + bgText)
 
@@ -67,11 +64,20 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         Log.d(TAG, "onComplicationDeactivated")
     }
 
+    private val bloodGlucoseService get() = BloodGlucoseService.getInstance(this.applicationContext)
+
     private fun initBloodGlucoseService(complicationId: Int, type: Int, manager: ComplicationManager) {
-        bloodGlucoseService = BloodGlucoseService(this.applicationContext)
-        bloodGlucoseService.onDataUpdate = { latestBg ->
+        Log.d(TAG, "initBloodGlucoseService")
+
+        if (initialized) {
+            Log.d(TAG, "already initialized")
+            return
+        }
+
+        bloodGlucoseService.addDataUpdateListener { latestBg ->
             Log.d(TAG, "onDataUpdate callback, latestBg: " + latestBg)
             this.onComplicationUpdate(complicationId, type, manager)
         }
+        initialized = true
     }
 }

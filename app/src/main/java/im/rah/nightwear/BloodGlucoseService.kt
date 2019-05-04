@@ -17,18 +17,31 @@ import kotlin.concurrent.schedule
 
 class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
     var latestBg:BloodGlucose? = null
-    var onDataUpdate: ((BloodGlucose)->Unit)? = null
+    var onDataUpdateListeners: MutableList<(BloodGlucose)->Unit> = mutableListOf()
 
     private var nightscoutBaseUrl = ""
     private val requestQueue: RequestQueue = Volley.newRequestQueue(context)
     private var prefs: SharedPreferences
-    private var lastRequestAdded:Instant = Instant.EPOCH
+    private var lastRequestAdded: Instant = Instant.EPOCH
 
     companion object {
         const val TAG:String = "BloodGlucoseService"
         val SENSOR_REFRESH_INTERVAL:Duration = Duration.ofMinutes(5)
 
         const val NS_CURRENT_ENTRY_PATH = "/api/v1/entries/current"
+
+        private var instance:BloodGlucoseService? = null
+
+        // WARN: implementation not thread safe
+        fun getInstance(context: Context) : BloodGlucoseService {
+            Log.d(TAG, "getInstance")
+
+            if (instance == null) {
+                instance = BloodGlucoseService(context.applicationContext)
+            }
+
+            return instance!!
+        }
     }
 
     init {
@@ -53,6 +66,10 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         }
     }
 
+    fun addDataUpdateListener(listener: (BloodGlucose)->Unit) {
+        onDataUpdateListeners.add(listener)
+    }
+
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
         Log.d(TAG, "prefs changed")
         if (key == "nightscoutBaseUrl") {
@@ -67,7 +84,6 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
     private fun refresh() {
         Log.d(TAG, "refresh: " + this.hashCode())
         Log.d(TAG, "Latest reading age: " + latestReadingAge().seconds)
-        Log.d(TAG, "nightscoutBaseUrl: " + nightscoutBaseUrl)
 
         if (nightscoutBaseUrl == "") return
         // remember: the lastReadingAge is not when we last successfully received a response
@@ -80,7 +96,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         // don't make requests more than once every 30s
         if (Duration.between(lastRequestAdded, Instant.now()) < Duration.ofSeconds(30)) return
 
-        Log.d(TAG, "clearing queue, then requesting")
+        Log.d(TAG, "clearing queue, then requesting, nightscoutBaseUrl: " + nightscoutBaseUrl)
         requestQueue.cancelAll(this)
 
         lastRequestAdded = Instant.now()
@@ -90,7 +106,10 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
                 Log.d(TAG, "bg received, parsing...")
                 try {
                     latestBg = BloodGlucose.parseTabSeparatedCurrent(response)
-                    onDataUpdate?.invoke(latestBg!!)
+                    onDataUpdateListeners.forEach {
+                        Log.d(TAG, "  notifying listener")
+                        it.invoke(latestBg!!)
+                    }
                 }
                 catch (e: ParseException) {
                     Log.d(TAG, "ParseException for response: " + response)
