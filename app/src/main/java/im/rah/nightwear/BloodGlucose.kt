@@ -25,6 +25,7 @@ class BloodGlucose(val glucoseLevel_mgdl : Int, val sensorTime : Long, val direc
 
     companion object {
         const val MMOLL_TO_MGDL = 18.0182
+        val OLD_READING_THRESHOLD = Duration.ofMinutes(11)
 
         @Throws(ParseException::class)
         @JvmStatic fun parseTabSeparatedCurrent(str : String) : BloodGlucose? {
@@ -58,7 +59,13 @@ class BloodGlucose(val glucoseLevel_mgdl : Int, val sensorTime : Long, val direc
 
     fun glucose(mmol : Boolean = true) = BloodGlucose.glucose(glucoseLevel_mgdl, mmol)
     fun directionLabel() = direction.label
-    fun combinedString(mmol : Boolean = true) = glucose(mmol) + " " + directionLabel()
+    fun annotation(markOld : Boolean) {
+        when {
+            markOld && readingAge() > OLD_READING_THRESHOLD -> "OLD"
+            else -> directionLabel()
+        }
+    }
+    fun combinedString(mmol : Boolean = true, markOld : Boolean = false) = glucose(mmol) + " " + annotation(markOld)
     override fun toString() = combinedString()
 
     fun sensorTimeInstant() = Instant.ofEpochMilli(sensorTime)
