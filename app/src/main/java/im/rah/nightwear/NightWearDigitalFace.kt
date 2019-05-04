@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import android.support.wearable.watchface.CanvasWatchFaceService
 import android.support.wearable.watchface.WatchFaceService
 import android.support.wearable.watchface.WatchFaceStyle
+import android.util.Log
 import android.view.SurfaceHolder
 import android.view.WindowInsets
 
@@ -28,6 +29,8 @@ import java.util.TimeZone
 class NightWearDigitalFace : CanvasWatchFaceService() {
 
     companion object {
+        const val TAG:String = "NightWearDigitalFace"
+
         private val NORMAL_TYPEFACE = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL)
 
         /**
@@ -40,14 +43,10 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
          * Handler message id for updating the time periodically in interactive mode.
          */
         private const val MSG_UPDATE_TIME = 0
-
-        private lateinit var bloodGlucoseService: BloodGlucoseService
     }
 
     override fun onCreateEngine(): Engine {
-        bloodGlucoseService = BloodGlucoseService(this)
-
-        return Engine()
+        return Engine(this)
     }
 
     private class EngineHandler(reference: NightWearDigitalFace.Engine) : Handler() {
@@ -63,7 +62,8 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
         }
     }
 
-    inner class Engine : CanvasWatchFaceService.Engine(), SharedPreferences.OnSharedPreferenceChangeListener {
+    inner class Engine(context: Context) : CanvasWatchFaceService.Engine(), SharedPreferences.OnSharedPreferenceChangeListener {
+        private var mContext: Context = context
         private var mPrefs: SharedPreferences
         private var mCalendar: Calendar
 
@@ -84,11 +84,18 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
         private var mAmbient: Boolean = false
         private var mMmol: Boolean
 
+        private val bloodGlucoseService get() = BloodGlucoseService.getInstance(mContext.applicationContext)
+
         init {
             mCalendar = Calendar.getInstance()
             mPrefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
             mPrefs.registerOnSharedPreferenceChangeListener(this)
             mMmol = mPrefs.getBoolean("mmol", true)
+
+            bloodGlucoseService.addDataUpdateListener { latestBg ->
+                Log.d(TAG, "onDataUpdate callback, latestBg: " + latestBg)
+                this.postInvalidate()
+            }
         }
 
         private val mUpdateTimeHandler: Handler = EngineHandler(this)
