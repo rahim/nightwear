@@ -34,19 +34,15 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
 
         // WARN: implementation not thread safe
         fun getInstance(context: Context) : BloodGlucoseService {
-            Log.d(TAG, "getInstance")
-
             if (instance == null) {
                 instance = BloodGlucoseService(context.applicationContext)
             }
-
             return instance!!
         }
     }
 
     init {
-        Log.d(TAG, "initing: " + this.hashCode())
-        Log.d(TAG, "context: " + context.hashCode())
+        Log.d(tag, "init, with context: " + context.hashCode())
         prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
         prefs.registerOnSharedPreferenceChangeListener(this)
         nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")
@@ -55,7 +51,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
     }
 
     fun tick() {
-        Log.d(TAG, "tick received")
+        Log.d(tag, "tick received")
     }
 
     fun latestReadingAge() : Duration {
@@ -71,7 +67,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
     }
 
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
-        Log.d(TAG, "prefs changed")
+        Log.d(tag, "prefs changed")
         if (key == "nightscoutBaseUrl") {
           nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")
         }
@@ -82,8 +78,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
     }
 
     private fun refresh() {
-        Log.d(TAG, "refresh: " + this.hashCode())
-        Log.d(TAG, "Latest reading age: " + latestReadingAge().seconds)
+        Log.d(tag, "Refresh, latest reading age: " + latestReadingAge().seconds)
 
         if (nightscoutBaseUrl == "") return
         // remember: the lastReadingAge is not when we last successfully received a response
@@ -96,31 +91,33 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         // don't make requests more than once every 30s
         if (Duration.between(lastRequestAdded, Instant.now()) < Duration.ofSeconds(30)) return
 
-        Log.d(TAG, "clearing queue, then requesting, nightscoutBaseUrl: " + nightscoutBaseUrl)
+        Log.d(tag, "clearing queue, then requesting, nightscoutBaseUrl: " + nightscoutBaseUrl)
         requestQueue.cancelAll(this)
 
         lastRequestAdded = Instant.now()
         val stringRequest = StringRequest(
             Request.Method.GET, nsCurrentEntryUrl(),
             Response.Listener<String> { response ->
-                Log.d(TAG, "bg received, parsing...")
+                Log.d(tag, "bg received, parsing...")
                 try {
                     latestBg = BloodGlucose.parseTabSeparatedCurrent(response)
+                    Log.d(tag, "  " + latestBg!!.combinedString() +  " notifying " + onDataUpdateListeners.size + " listeners")
                     onDataUpdateListeners.forEach {
-                        Log.d(TAG, "  notifying listener")
                         it.invoke(latestBg!!)
                     }
                 }
                 catch (e: ParseException) {
-                    Log.d(TAG, "ParseException for response: " + response)
+                    Log.d(tag, "ParseException for response: " + response)
                 }
             },
             Response.ErrorListener {
-                Log.d(TAG, "request error")
+                Log.d(tag, "request error")
             })
         stringRequest.tag = this
 
         // Add the request to the RequestQueue.
         requestQueue.add(stringRequest)
     }
+
+    private val tag get() = TAG + "{" + hashCode() + ":" + Thread.currentThread().id + "}"
 }

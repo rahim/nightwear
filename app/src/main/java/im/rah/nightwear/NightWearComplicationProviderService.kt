@@ -12,20 +12,20 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
     private var initialized = false
 
     override fun onCreate() {
-        Log.d(TAG, "onCreate")
+        Log.d(tag, "onCreate")
         super.onCreate()
     }
 
     override fun onDestroy() {
-        Log.d(TAG, "onDestroy")
+        Log.d(tag, "onDestroy")
         super.onDestroy()
     }
 
     override fun onComplicationUpdate(complicationId: Int, type: Int, manager: ComplicationManager) {
-        Log.d(TAG, "onComplicationUpdate")
+        Log.d(tag, "onComplicationUpdate")
 
         if (type != ComplicationData.TYPE_SHORT_TEXT) {
-            Log.d(TAG, "unsupported complication data type requested")
+            Log.d(tag, "unsupported complication data type requested")
             manager.noUpdateRequired(complicationId)
             return
         }
@@ -33,7 +33,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         val bgText: String =
             bloodGlucoseService.latestBg?.combinedString(markOld = true) ?: getString(R.string.complication_no_data)
 
-        Log.d(TAG, "updating complication data, bgText: " + bgText)
+        Log.d(tag, "updating complication data, bgText: " + bgText)
 
         val data: ComplicationData =
              ComplicationData.Builder(type)
@@ -55,30 +55,32 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
 
     override fun onComplicationActivated(complicationId: Int, type: Int, manager: ComplicationManager) {
         super.onComplicationActivated(complicationId, type, manager)
-        Log.d(TAG, "onComplicationActivated")
+        Log.d(tag, "onComplicationActivated")
 
         initBloodGlucoseService(complicationId, type, manager)
     }
 
     override fun onComplicationDeactivated(complicationId: Int) {
         super.onComplicationDeactivated(complicationId)
-        Log.d(TAG, "onComplicationDeactivated")
+        Log.d(tag, "onComplicationDeactivated")
     }
 
     private val bloodGlucoseService get() = BloodGlucoseService.getInstance(this.applicationContext)
 
     private fun initBloodGlucoseService(complicationId: Int, type: Int, manager: ComplicationManager) {
-        Log.d(TAG, "initBloodGlucoseService")
+        Log.d(tag, "initBloodGlucoseService")
 
         if (initialized) {
-            Log.d(TAG, "already initialized")
+            Log.d(tag, "already initialized")
             return
         }
 
         bloodGlucoseService.addDataUpdateListener { latestBg ->
-            Log.d(TAG, "onDataUpdate callback, latestBg: " + latestBg)
+            Log.d(tag, "onDataUpdate callback, latestBg: " + latestBg)
             this.onComplicationUpdate(complicationId, type, manager)
         }
         initialized = true
     }
+
+    private val tag get() = TAG + "{" + hashCode() + ":" + Thread.currentThread().id + "}"
 }
