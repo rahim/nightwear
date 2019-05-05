@@ -24,6 +24,8 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
     override fun onComplicationUpdate(complicationId: Int, type: Int, manager: ComplicationManager) {
         Log.d(tag, "onComplicationUpdate")
 
+        initBloodGlucoseService(complicationId, type, manager)
+
         if (type != ComplicationData.TYPE_SHORT_TEXT) {
             Log.d(tag, "unsupported complication data type requested")
             manager.noUpdateRequired(complicationId)
