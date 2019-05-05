@@ -59,8 +59,8 @@ class BloodGlucose(val glucoseLevel_mgdl : Int, val sensorTime : Long, val direc
 
     fun glucose(mmol : Boolean = true) = BloodGlucose.glucose(glucoseLevel_mgdl, mmol)
     fun directionLabel() = direction.label
-    fun annotation(markOld : Boolean) {
-        when {
+    fun annotation(markOld : Boolean) : String {
+        return when {
             markOld && readingAge() > OLD_READING_THRESHOLD -> "OLD"
             else -> directionLabel()
         }
