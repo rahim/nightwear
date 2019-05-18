@@ -3,6 +3,7 @@ package im.rah.nightwear
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import android.support.wearable.complications.ProviderUpdateRequester
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -14,6 +15,9 @@ import java.time.Duration
 import java.time.Instant
 import java.util.*
 import kotlin.concurrent.schedule
+import android.content.ComponentName
+
+
 
 class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
     var latestBg:BloodGlucose? = null
@@ -48,6 +52,13 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")
 
         Timer().schedule(0, 1000 * 15) { refresh() }
+
+        addDataUpdateListener {
+            Log.d(tag, "sending provider update request...")
+            val provider = ComponentName(context, NightWearComplicationProviderService::class.java)
+            val requester = ProviderUpdateRequester(context, provider)
+            requester.requestUpdateAll()
+        }
     }
 
     fun tick() {
