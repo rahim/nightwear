@@ -34,6 +34,7 @@
                 <category android:name=
                                   "com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.support.wearable.complications.category.PROVIDER_CONFIG" />
             </intent-filter>
         </activity>
 
@@ -80,6 +81,9 @@
             <meta-data
                     android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
                     android:value="30"/>
+            <meta-data
+                    android:name="android.support.wearable.complications.PROVIDER_CONFIG_ACTION"
+                    android:value="im.rah.nightwear.CONFIG"/>
         </service>
     </application>
 

@@ -1,5 +1,6 @@
 package im.rah.nightwear
 
+import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -69,7 +70,12 @@ class ConfigurationActivity : WearableActivity() {
         })
 
         saveButton = findViewById(R.id.save_button)
-        saveButton.setOnClickListener { persistUrl() }
+        saveButton.setOnClickListener {
+            // TODO: validation of URL
+            persistUrl()
+            setResult(Activity.RESULT_OK)
+            finish()
+        }
 
         unitToggleButton = findViewById(R.id.unit_toggle_button)
         unitToggleButton.setOnClickListener { persistUnit() }
