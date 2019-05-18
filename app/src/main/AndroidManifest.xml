@@ -80,7 +80,7 @@
                     android:value="SHORT_TEXT"/>
             <meta-data
                     android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
-                    android:value="30"/>
+                    android:value="300"/>
             <meta-data
                     android:name="android.support.wearable.complications.PROVIDER_CONFIG_ACTION"
                     android:value="im.rah.nightwear.CONFIG"/>

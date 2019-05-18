@@ -76,11 +76,6 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
             Log.d(tag, "already initialized")
             return
         }
-
-        bloodGlucoseService.addDataUpdateListener { latestBg ->
-            Log.d(tag, "onDataUpdate callback, latestBg: " + latestBg)
-            this.onComplicationUpdate(complicationId, type, manager)
-        }
         initialized = true
     }
 
