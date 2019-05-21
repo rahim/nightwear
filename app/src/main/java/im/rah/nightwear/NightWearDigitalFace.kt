@@ -103,6 +103,10 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
         override fun onCreate(holder: SurfaceHolder) {
             super.onCreate(holder)
 
+            if (!mPrefs.contains("nightscoutBaseUrl")) {
+                startActivity(Intent(mContext, ConfigurationActivity::class.java))
+            }
+
             setWatchFaceStyle(
                 WatchFaceStyle.Builder(this@NightWearDigitalFace)
                     .setAcceptsTapEvents(true)
