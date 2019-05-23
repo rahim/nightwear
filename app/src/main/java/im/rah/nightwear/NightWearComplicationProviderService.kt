@@ -27,7 +27,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
 
     override fun onComplicationUpdate(complicationId: Int, type: Int, manager: ComplicationManager) {
         Log.d(tag, "onComplicationUpdate")
-
+        
         val bg: BloodGlucose
         initBloodGlucoseService(complicationId, type, manager)
 
@@ -78,8 +78,6 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
                     .setReferencePeriodEnd(bg.sensorTime)
                     .setShowNowText(false)
                     .build()
-            ).setLongTitle(
-                ComplicationText.plainText("Blood glucose")
             ).setIcon(
                 Icon.createWithResource(
                     this, R.drawable.baseline_invert_colors_white_18dp
