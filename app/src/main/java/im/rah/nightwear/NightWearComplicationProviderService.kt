@@ -7,6 +7,10 @@ import android.util.Log
 class NightWearComplicationProviderService : ComplicationProviderService() {
     companion object {
         const val TAG: String = "NightWearComplicationProviderService"
+        val SUPPORTED_TYPED: Array<Int> = arrayOf(
+            ComplicationData.TYPE_SHORT_TEXT,
+            ComplicationData.TYPE_LONG_TEXT
+        )
     }
 
     private var initialized = false
@@ -24,34 +28,68 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
     override fun onComplicationUpdate(complicationId: Int, type: Int, manager: ComplicationManager) {
         Log.d(tag, "onComplicationUpdate")
 
+        val bg: BloodGlucose
         initBloodGlucoseService(complicationId, type, manager)
 
-        if (type != ComplicationData.TYPE_SHORT_TEXT) {
+        if (!SUPPORTED_TYPED.contains(type)) {
             Log.d(tag, "unsupported complication data type requested")
             manager.noUpdateRequired(complicationId)
             return
         }
 
-        val bgText: String =
-            bloodGlucoseService.latestBg?.combinedString(markOld = true) ?: getString(R.string.complication_no_data)
+        if (bloodGlucoseService.latestBg == null) {
+            Log.d(tag, "no bg available")
+            manager.noUpdateRequired(complicationId)
+            return
+        } else {
+            bg = bloodGlucoseService.latestBg!!
+        }
 
-        Log.d(tag, "updating complication data, bgText: " + bgText)
-
-        val data: ComplicationData =
-             ComplicationData.Builder(type)
-                .setShortText(
-                    ComplicationText.plainText(
-                        bgText
-                    )
-                )
+        val builder =
+            ComplicationData.Builder(type)
                 .setIcon(
                     Icon.createWithResource(
                         this, R.drawable.baseline_invert_colors_white_18dp
                     )
-                ).setShortTitle(
-                    ComplicationText.plainText("BG")
                 )
-                .build()
+        
+        if (type == ComplicationData.TYPE_SHORT_TEXT) {
+            val bgText: String = bg.combinedString(markOld = true)
+
+            Log.d(tag, "updating complication data (SHORT_TEXT), bgText: " + bgText)
+
+            builder.setShortText(
+                ComplicationText.plainText(
+                    bgText
+                )
+            ).setShortTitle(
+                ComplicationText.TimeDifferenceBuilder()
+                    .setSurroundingText("(^1)")
+                    .setReferencePeriodStart(bg.sensorTime)
+                    .setReferencePeriodEnd(bg.sensorTime)
+                    .setShowNowText(false)
+                    .build()
+            )
+        }
+
+        if (type == ComplicationData.TYPE_LONG_TEXT) {
+            val bgText: String = bg.combinedString(markOld = false) + " (^1)" // the ^1 is interpolated with the age
+
+            Log.d(tag, "updating complication data (LONG_TEXT), bgText: " + bgText)
+
+            builder.setLongText(
+                ComplicationText.TimeDifferenceBuilder()
+                    .setSurroundingText(bgText)
+                    .setReferencePeriodStart(bg.sensorTime)
+                    .setReferencePeriodEnd(bg.sensorTime)
+                    .setShowNowText(false)
+                    .build()
+            ).setLongTitle(
+                ComplicationText.plainText("Blood glucose")
+            )
+        }
+
+        val data: ComplicationData = builder.build()
         manager.updateComplicationData(complicationId, data)
     }
 
