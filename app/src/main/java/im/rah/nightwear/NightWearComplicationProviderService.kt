@@ -45,13 +45,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
             bg = bloodGlucoseService.latestBg!!
         }
 
-        val builder =
-            ComplicationData.Builder(type)
-                .setIcon(
-                    Icon.createWithResource(
-                        this, R.drawable.baseline_invert_colors_white_18dp
-                    )
-                )
+        val builder = ComplicationData.Builder(type)
         
         if (type == ComplicationData.TYPE_SHORT_TEXT) {
             val bgText: String = bg.combinedString(markOld = true)
@@ -86,6 +80,10 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
                     .build()
             ).setLongTitle(
                 ComplicationText.plainText("Blood glucose")
+            ).setIcon(
+                Icon.createWithResource(
+                    this, R.drawable.baseline_invert_colors_white_18dp
+                )
             )
         }
 
