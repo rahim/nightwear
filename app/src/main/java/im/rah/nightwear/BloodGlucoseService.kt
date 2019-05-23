@@ -49,7 +49,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         Log.d(tag, "init, with context: " + context.hashCode())
         prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
         prefs.registerOnSharedPreferenceChangeListener(this)
-        nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")
+        nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")!!
 
         Timer().schedule(0, 1000 * 15) { refresh() }
 
@@ -80,7 +80,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
         Log.d(tag, "prefs changed")
         if (key == "nightscoutBaseUrl") {
-          nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")
+          nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")!!
         }
     }
 
