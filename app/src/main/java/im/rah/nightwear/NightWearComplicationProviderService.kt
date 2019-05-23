@@ -13,32 +13,19 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         )
     }
 
-    private var initialized = false
-
-    override fun onCreate() {
-        Log.d(tag, "onCreate")
-        super.onCreate()
-    }
-
-    override fun onDestroy() {
-        Log.d(tag, "onDestroy")
-        super.onDestroy()
-    }
-
     override fun onComplicationUpdate(complicationId: Int, type: Int, manager: ComplicationManager) {
-        Log.d(tag, "onComplicationUpdate")
-        
+        Log.d(TAG, "onComplicationUpdate")
+
         val bg: BloodGlucose
-        initBloodGlucoseService(complicationId, type, manager)
 
         if (!SUPPORTED_TYPED.contains(type)) {
-            Log.d(tag, "unsupported complication data type requested")
+            Log.d(TAG, "unsupported complication data type requested")
             manager.noUpdateRequired(complicationId)
             return
         }
 
         if (bloodGlucoseService.latestBg == null) {
-            Log.d(tag, "no bg available")
+            Log.d(TAG, "no bg available")
             manager.noUpdateRequired(complicationId)
             return
         } else {
@@ -50,7 +37,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         if (type == ComplicationData.TYPE_SHORT_TEXT) {
             val bgText: String = bg.combinedString(markOld = true)
 
-            Log.d(tag, "updating complication data (SHORT_TEXT), bgText: " + bgText)
+            Log.d(TAG, "updating complication data (SHORT_TEXT), bgText: " + bgText)
 
             builder.setShortText(
                 ComplicationText.plainText(
@@ -69,7 +56,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         if (type == ComplicationData.TYPE_LONG_TEXT) {
             val bgText: String = bg.combinedString(markOld = false) + " (^1)" // the ^1 is interpolated with the age
 
-            Log.d(tag, "updating complication data (LONG_TEXT), bgText: " + bgText)
+            Log.d(TAG, "updating complication data (LONG_TEXT), bgText: " + bgText)
 
             builder.setLongText(
                 ComplicationText.TimeDifferenceBuilder()
@@ -89,29 +76,5 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         manager.updateComplicationData(complicationId, data)
     }
 
-    override fun onComplicationActivated(complicationId: Int, type: Int, manager: ComplicationManager) {
-        super.onComplicationActivated(complicationId, type, manager)
-        Log.d(tag, "onComplicationActivated")
-
-        initBloodGlucoseService(complicationId, type, manager)
-    }
-
-    override fun onComplicationDeactivated(complicationId: Int) {
-        super.onComplicationDeactivated(complicationId)
-        Log.d(tag, "onComplicationDeactivated")
-    }
-
     private val bloodGlucoseService get() = BloodGlucoseService.getInstance(this.applicationContext)
-
-    private fun initBloodGlucoseService(complicationId: Int, type: Int, manager: ComplicationManager) {
-        Log.d(tag, "initBloodGlucoseService")
-
-        if (initialized) {
-            Log.d(tag, "already initialized")
-            return
-        }
-        initialized = true
-    }
-
-    private val tag get() = TAG + "{" + hashCode() + ":" + Thread.currentThread().id + "}"
 }
