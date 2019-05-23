@@ -29,7 +29,7 @@
                         android:text="Units"
                         android:layout_width="match_parent"
                         android:layout_height="40sp" android:id="@+id/unit_toggle_button"
-                        android:textOff="mg/dl" android:textOn="mmol/L" android:checked="true"
+                        android:textOff="mg/dL" android:textOn="mmol/L" android:checked="true"
                         android:textAppearance="@android:style/TextAppearance.Material.Small"
                         style="@android:style/Widget.Material.Button.Toggle" android:textSize="12sp"/>
                 <Space
