@@ -56,7 +56,7 @@
                         android:layout_height="wrap_content" android:id="@+id/tld" android:spinnerMode="dialog"
                 />
                 <Button
-                        android:text="Save domain"
+                        android:text="Confirm"
                         android:layout_width="match_parent"
                         android:layout_height="40sp" android:id="@+id/save_button"
                         android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
