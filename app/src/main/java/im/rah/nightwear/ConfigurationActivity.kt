@@ -100,7 +100,7 @@ class ConfigurationActivity : WearableActivity() {
     }
 
     private fun loadUrlFromPrefs() {
-        val url = prefs.getString("nightscoutBaseUrl", DEFAULT_URL)
+        val url = prefs.getString("nightscoutBaseUrl", DEFAULT_URL)!!
         val domain = domainFromUrl(url)
         domainEditText.setText(domain)
 
