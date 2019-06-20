@@ -58,7 +58,7 @@
                 <Button
                         android:text="Confirm"
                         android:layout_width="match_parent"
-                        android:layout_height="40sp" android:id="@+id/save_button"
+                        android:layout_height="40sp" android:id="@+id/confirm_button"
                         android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
                         android:textSize="10sp" style="@android:style/Widget.Material.Button.Small"/>
             </LinearLayout>

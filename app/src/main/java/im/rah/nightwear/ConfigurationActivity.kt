@@ -9,7 +9,11 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.webkit.URLUtil
 import android.widget.*
+import java.io.IOException
+import java.net.URL
+import kotlin.concurrent.thread
 
 class ConfigurationActivity : WearableActivity() {
 
@@ -24,7 +28,7 @@ class ConfigurationActivity : WearableActivity() {
     private lateinit var urlTextView:TextView
     private lateinit var domainEditText:EditText
     private lateinit var tldSpinner:Spinner
-    private lateinit var saveButton:Button
+    private lateinit var confirmButton:Button
     private lateinit var unitToggleButton:ToggleButton
 
     private lateinit var prefs:SharedPreferences
@@ -69,12 +73,20 @@ class ConfigurationActivity : WearableActivity() {
             }
         })
 
-        saveButton = findViewById(R.id.save_button)
-        saveButton.setOnClickListener {
-            // TODO: validation of URL
-            persistUrl()
-            setResult(Activity.RESULT_OK)
-            finish()
+        confirmButton = findViewById(R.id.confirm_button)
+        confirmButton.setOnClickListener {
+            thread {
+                if (urlValid()) {
+                    persistUrl()
+                    setResult(Activity.RESULT_OK)
+                    finish()
+                }
+                else {
+                    this.runOnUiThread {
+                        Toast.makeText(this, "Invalid URL: ${url()}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
         }
 
         unitToggleButton = findViewById(R.id.unit_toggle_button)
@@ -149,6 +161,14 @@ class ConfigurationActivity : WearableActivity() {
             scheme + domainEditText.text + "." + tldSpinner.selectedItem
         } else {
             scheme + domainEditText.text
+        }
+    }
+
+    private fun urlValid() : Boolean {
+        return try {
+            URL(url() + "/api/v1/status.json").readText().contains("nightscout")
+        } catch (e : IOException) {
+            false
         }
     }
 }
