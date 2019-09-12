@@ -34,6 +34,7 @@
                 <category android:name=
                                   "com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION" />
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.support.wearable.complications.category.PROVIDER_CONFIG" />
             </intent-filter>
         </activity>
 
@@ -63,6 +64,26 @@
 
                 <category android:name="com.google.android.wearable.watchface.category.WATCH_FACE"/>
             </intent-filter>
+        </service>
+
+        <service
+                android:name=".NightWearComplicationProviderService"
+                android:icon="@drawable/baseline_invert_colors_white_18dp"
+                android:label="@string/complication_provider_name"
+                android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+            <intent-filter>
+                <action
+                        android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST"/>
+            </intent-filter>
+            <meta-data
+                    android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                    android:value="SHORT_TEXT,LONG_TEXT"/>
+            <meta-data
+                    android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                    android:value="300"/>
+            <meta-data
+                    android:name="android.support.wearable.complications.PROVIDER_CONFIG_ACTION"
+                    android:value="im.rah.nightwear.CONFIG"/>
         </service>
     </application>
 
