@@ -54,7 +54,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         }
 
         if (type == ComplicationData.TYPE_LONG_TEXT) {
-            val bgText: String = bg.combinedString(markOld = false) + " (^1)" // the ^1 is interpolated with the age
+            val bgText: String = bg.combinedString(markOld = false, saferUnicode = true) + " (^1)" // the ^1 is interpolated with the age
 
             Log.d(TAG, "updating complication data (LONG_TEXT), bgText: " + bgText)
 
