@@ -35,7 +35,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         val builder = ComplicationData.Builder(type)
         
         if (type == ComplicationData.TYPE_SHORT_TEXT) {
-            val bgText: String = bg.combinedString(markOld = true)
+            val bgText: String = bg.combinedString(markOld = true, saferUnicode = true)
 
             Log.d(TAG, "updating complication data (SHORT_TEXT), bgText: " + bgText)
 
