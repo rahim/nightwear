@@ -1,6 +1,8 @@
 package im.rah.nightwear
 
+import android.content.SharedPreferences
 import android.graphics.drawable.Icon
+import android.preference.PreferenceManager
 import android.support.wearable.complications.*
 import android.util.Log
 
@@ -17,6 +19,8 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         Log.d(TAG, "onComplicationUpdate")
 
         val bg: BloodGlucose
+        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val mmol = prefs.getBoolean("mmol", true)
 
         if (!SUPPORTED_TYPED.contains(type)) {
             Log.d(TAG, "unsupported complication data type requested")
@@ -35,7 +39,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         val builder = ComplicationData.Builder(type)
         
         if (type == ComplicationData.TYPE_SHORT_TEXT) {
-            val bgText: String = bg.combinedString(markOld = true, saferUnicode = true)
+            val bgText: String = bg.combinedString(mmol = mmol, markOld = true, saferUnicode = true)
 
             Log.d(TAG, "updating complication data (SHORT_TEXT), bgText: " + bgText)
 
@@ -54,7 +58,7 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         }
 
         if (type == ComplicationData.TYPE_LONG_TEXT) {
-            val bgText: String = bg.combinedString(markOld = false, saferUnicode = true) + " (^1)" // the ^1 is interpolated with the age
+            val bgText: String = bg.combinedString(mmol = mmol, markOld = false, saferUnicode = true) + " (^1)" // the ^1 is interpolated with the age
 
             Log.d(TAG, "updating complication data (LONG_TEXT), bgText: " + bgText)
 
