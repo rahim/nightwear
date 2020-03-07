@@ -12,7 +12,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "im.rah.nightwear"
-        minSdkVersion 26
+        minSdkVersion 25
         targetSdkVersion 28
         versionCode androidGitVersion.code()
         versionName androidGitVersion.name()
@@ -42,5 +42,6 @@ dependencies {
     implementation 'androidx.palette:palette:1.0.0'
     implementation 'com.android.volley:volley:1.1.1'
     implementation 'androidx.core:core-ktx:1.0.1'
+    implementation 'org.threeten:threetenbp:1.4.1'
     compileOnly 'com.google.android.wearable:wearable:2.4.0'
 }
