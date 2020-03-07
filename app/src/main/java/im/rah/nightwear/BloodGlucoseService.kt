@@ -10,14 +10,12 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import org.threeten.bp.Duration
+import org.threeten.bp.Instant
 import java.text.ParseException
-import java.time.Duration
-import java.time.Instant
 import java.util.*
 import kotlin.concurrent.schedule
 import android.content.ComponentName
-
-
 
 class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
     var latestBg:BloodGlucose? = null
