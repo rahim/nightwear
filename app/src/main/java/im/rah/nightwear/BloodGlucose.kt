@@ -54,6 +54,10 @@ class BloodGlucose(val glucoseLevel_mgdl: Int, val sensorTime: Long, val directi
             }
         }
 
+        @JvmStatic fun parseTabSeparatedRecent(str: String): List<BloodGlucose?> {
+            return str.lines().map { parseTabSeparatedCurrent(it) }
+        }
+
         fun glucose(mgdl: Int, mmol: Boolean = true): String {
             return if (mmol) {
                 DecimalFormat("##.0").format(mgdl / MMOLL_TO_MGDL)
