@@ -1,5 +1,6 @@
 plugins {
     id 'com.gladed.androidgitversion' version '0.4.9'
+    id 'com.adarshr.test-logger' version '2.1.1'
 }
 
 apply plugin: 'com.android.application'
@@ -44,4 +45,8 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.0.1'
     implementation 'org.threeten:threetenbp:1.4.1'
     compileOnly 'com.google.android.wearable:wearable:2.4.0'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation "com.google.truth:truth:1.1"
+    testImplementation 'androidx.test:core:1.0.0'
 }
