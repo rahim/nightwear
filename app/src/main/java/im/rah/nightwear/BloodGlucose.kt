@@ -68,18 +68,7 @@ class BloodGlucose(val glucoseLevel_mgdl: Int, val sensorTime: Long, val directi
         }
     }
 
-    fun glucose(mmol: Boolean = true) = glucose(glucoseLevel_mgdl, mmol)
-    fun directionLabel(saferUnicode: Boolean = false) =
-        if (saferUnicode) direction.saferLabel else direction.bolderLabel
-    fun annotation(markOld: Boolean, saferUnicode: Boolean = false) : String {
-        return when {
-            markOld && readingAge() > OLD_READING_THRESHOLD -> "OLD"
-            else -> directionLabel(saferUnicode)
-        }
-    }
-    fun combinedString(mmol: Boolean = true, markOld: Boolean = false, saferUnicode: Boolean = false) =
-        glucose(mmol) + " " + annotation(markOld, saferUnicode)
-    override fun toString() = combinedString()
+    override fun toString() = BloodGlucosePresenter(this).combinedString()
 
     fun sensorTimeInstant() = Instant.ofEpochMilli(sensorTime)
     fun readingAge() = Duration.between(sensorTimeInstant(), Instant.now())

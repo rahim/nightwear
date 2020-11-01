@@ -113,7 +113,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
                 Log.d(tag, "bg received, parsing...")
                 try {
                     latestBg = BloodGlucose.parseTabSeparatedCurrent(response)
-                    Log.d(tag, "  " + latestBg!!.combinedString() +  " notifying " + onDataUpdateListeners.size + " listeners")
+                    Log.d(tag, "  " + latestBg!! +  " notifying " + onDataUpdateListeners.size + " listeners")
                     onDataUpdateListeners.forEach {
                         it.invoke(latestBg!!)
                     }
