@@ -1,15 +1,17 @@
 package im.rah.nightwear
 
-class BloodGlucosePresenter(private val bg: BloodGlucose, private val mmol: Boolean = true) {
+class BloodGlucosePresenter(private val bg: BloodGlucose,
+                            private val mmol: Boolean = true,
+                            private val markOld: Boolean = false,
+                            private val saferUnicode: Boolean = false) {
     private fun glucose() = BloodGlucose.glucose(bg.glucoseLevel_mgdl, mmol)
-    private fun directionLabel(saferUnicode: Boolean = false) =
+    private fun directionLabel() =
         if (saferUnicode) bg.direction.saferLabel else bg.direction.bolderLabel
-    private fun annotation(markOld: Boolean, saferUnicode: Boolean = false) : String {
+    private fun annotation() : String {
         return when {
             markOld && bg.readingAge() > BloodGlucose.OLD_READING_THRESHOLD -> "OLD"
-            else -> directionLabel(saferUnicode)
+            else -> directionLabel()
         }
     }
-    fun combinedString(markOld: Boolean = false, saferUnicode: Boolean = false) =
-        glucose() + " " + annotation(markOld, saferUnicode)
+    fun combinedString() = glucose() + " " + annotation()
 }
