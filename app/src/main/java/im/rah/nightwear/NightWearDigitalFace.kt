@@ -111,7 +111,10 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
             super.onCreate(holder)
 
             if (!mPrefs.contains("nightscoutBaseUrl")) {
-                startActivity(Intent(mContext, ConfigurationActivity::class.java))
+                startActivity(
+                    Intent(mContext, ConfigurationActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
             }
 
             setWatchFaceStyle(
