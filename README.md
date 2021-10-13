@@ -1,6 +1,6 @@
 # NightWear
 
-A minimal standalone [Wear OS 2.0](https://wearos.google.com) watch face to follow blood glucose data from [NightScout](http://www.nightscout.info/).
+A minimal standalone [Wear OS 2.0](https://wearos.google.com) watch face and complication to follow blood glucose data from [NightScout](http://www.nightscout.info/).
 
 <img src="/assets/photo/7II02989_1024x500.jpg">
 
