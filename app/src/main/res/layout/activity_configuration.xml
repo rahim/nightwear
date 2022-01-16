@@ -25,16 +25,47 @@
                         android:layout_height="wrap_content" android:id="@+id/bg_units_label"
                         android:text="Units"
                         android:textSize="12sp" android:textAlignment="center"/>
+
                 <ToggleButton
                         android:text="Units"
                         android:layout_width="match_parent"
-                        android:layout_height="40sp" android:id="@+id/unit_toggle_button"
-                        android:textOff="mg/dL" android:textOn="mmol/L" android:checked="true"
+                        android:layout_height="48dp"
+                        android:id="@+id/unit_toggle_button"
+                        android:textOff="mg/dL"
+                        android:textOn="mmol/L"
+                        android:checked="true"
                         android:textAppearance="@android:style/TextAppearance.Material.Small"
-                        style="@android:style/Widget.Material.Button.Toggle" android:textSize="12sp"/>
+                        style="@android:style/Widget.Material.Button.Toggle"
+                        android:textSize="12sp" />
+
                 <Space
                         android:layout_width="match_parent"
                         android:layout_height="16sp"/>
+
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/time_format_label"
+                        android:text="Time format"
+                        android:textSize="12sp"
+                        android:textAlignment="center" />
+
+                <ToggleButton
+                        android:text="Time format"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:id="@+id/time_format_toggle_button"
+                        android:textOff="12hr"
+                        android:textOn="24hr"
+                        android:checked="true"
+                        android:textAppearance="@android:style/TextAppearance.Material.Small"
+                        style="@android:style/Widget.Material.Button.Toggle"
+                        android:textSize="12sp" />
+
+                <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="16sp" />
+
                 <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" android:id="@+id/url_label"
@@ -55,12 +86,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" android:id="@+id/tld" android:spinnerMode="dialog"
                 />
+
                 <Button
                         android:text="Confirm"
                         android:layout_width="match_parent"
-                        android:layout_height="40sp" android:id="@+id/confirm_button"
+                        android:layout_height="48dp"
+                        android:id="@+id/confirm_button"
                         android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
-                        android:textSize="10sp" style="@android:style/Widget.Material.Button.Small"/>
+                        android:textSize="10sp"
+                        style="@android:style/Widget.Material.Button.Small" />
             </LinearLayout>
         </FrameLayout>
     </ScrollView>

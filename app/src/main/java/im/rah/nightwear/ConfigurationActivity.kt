@@ -9,7 +9,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.webkit.URLUtil
 import android.widget.*
 import java.io.IOException
 import java.net.URL
@@ -30,6 +29,7 @@ class ConfigurationActivity : WearableActivity() {
     private lateinit var tldSpinner:Spinner
     private lateinit var confirmButton:Button
     private lateinit var unitToggleButton:ToggleButton
+    private lateinit var timeFormatToggleButton:ToggleButton
 
     private lateinit var prefs:SharedPreferences
 
@@ -92,8 +92,12 @@ class ConfigurationActivity : WearableActivity() {
         unitToggleButton = findViewById(R.id.unit_toggle_button)
         unitToggleButton.setOnClickListener { persistUnit() }
 
+        timeFormatToggleButton = findViewById(R.id.time_format_toggle_button)
+        timeFormatToggleButton.setOnClickListener { persistTimeFormat() }
+
         loadUrlFromPrefs()
         loadUnitFromPrefs()
+        loadTimeFormatFromPrefs()
 
         // Enables Always-on
         setAmbientEnabled()
@@ -113,6 +117,11 @@ class ConfigurationActivity : WearableActivity() {
     private fun loadUnitFromPrefs() {
         val mmol = prefs.getBoolean("mmol", true)
         unitToggleButton.isChecked = mmol
+    }
+
+    private fun loadTimeFormatFromPrefs() {
+        val twentyFourHour = prefs.getBoolean("twentyFourHour", true)
+        timeFormatToggleButton.isChecked = twentyFourHour
     }
 
     private fun domainFromUrl(url:String) : String {
@@ -153,6 +162,13 @@ class ConfigurationActivity : WearableActivity() {
         Log.d(TAG, "persistUnit")
         val edit = prefs.edit()
         edit.putBoolean("mmol", unitToggleButton.isChecked)
+        edit.apply()
+    }
+
+    private fun persistTimeFormat() {
+        Log.d(TAG, "persistTimeFormat")
+        val edit = prefs.edit()
+        edit.putBoolean("twentyFourHour", timeFormatToggleButton.isChecked)
         edit.apply()
     }
 

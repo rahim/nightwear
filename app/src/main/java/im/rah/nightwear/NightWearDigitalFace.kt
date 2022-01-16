@@ -83,6 +83,7 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
         private var mBurnInProtection: Boolean = false
         private var mAmbient: Boolean = false
         private var mMmol: Boolean
+        private var mTwentyFourHour: Boolean
 
         private val bloodGlucoseService get() = BloodGlucoseService.getInstance(mContext.applicationContext)
 
@@ -91,6 +92,7 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
             mPrefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
             mPrefs.registerOnSharedPreferenceChangeListener(this)
             mMmol = mPrefs.getBoolean("mmol", true)
+            mTwentyFourHour = mPrefs.getBoolean("twentyFourHour", true)
 
             bloodGlucoseService.addDataUpdateListener { latestBg ->
                 Log.d(TAG, "onDataUpdate callback, latestBg: " + latestBg)
@@ -201,12 +203,22 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
                 val now = System.currentTimeMillis()
                 mCalendar.timeInMillis = now
 
-                val timeText = String.format(
-                    "%02d:%02d:%02d",
-                    mCalendar.get(Calendar.HOUR_OF_DAY),
-                    mCalendar.get(Calendar.MINUTE),
-                    mCalendar.get(Calendar.SECOND)
-                )
+                val timeText =
+                    if (mTwentyFourHour)
+                        String.format(
+                            "%02d:%02d:%02d",
+                            mCalendar.get(Calendar.HOUR_OF_DAY),
+                            mCalendar.get(Calendar.MINUTE),
+                            mCalendar.get(Calendar.SECOND)
+                        )
+                    else
+                        String.format(
+                            "%d:%02d:%02d",
+                            mCalendar.get(Calendar.HOUR),
+                            mCalendar.get(Calendar.MINUTE),
+                            mCalendar.get(Calendar.SECOND)
+                        )
+
                 canvas.drawText(timeText, mXOffset, mYOffset + 2*mTextPaint.textSize, mTextPaint)
             }
         }
@@ -231,6 +243,7 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
 
         override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
             if (key == "mmol") mMmol = prefs.getBoolean("mmol", true)
+            if (key == "twentyFourHour") mTwentyFourHour = prefs.getBoolean("twentyFourHour", true)
         }
 
         private fun registerReceiver() {
