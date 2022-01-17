@@ -199,27 +199,31 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
             if (!mAmbient) {
                 val readingAgeText = bloodGlucoseService.latestReadingAge().toMinutes().toString() + "m"
                 canvas.drawText(readingAgeText, mXOffset, mYOffset + mTextPaint.textSize, mTextPaint)
+                canvas.drawText(timeText(), mXOffset, mYOffset + 2*mTextPaint.textSize, mTextPaint)
+            }
+        }
 
-                val now = System.currentTimeMillis()
-                mCalendar.timeInMillis = now
+        private fun timeText(): String {
+            val now = System.currentTimeMillis()
+            mCalendar.timeInMillis = now
 
-                val timeText =
-                    if (mTwentyFourHour)
-                        String.format(
-                            "%02d:%02d:%02d",
-                            mCalendar.get(Calendar.HOUR_OF_DAY),
-                            mCalendar.get(Calendar.MINUTE),
-                            mCalendar.get(Calendar.SECOND)
-                        )
-                    else
-                        String.format(
-                            "%d:%02d:%02d",
-                            mCalendar.get(Calendar.HOUR),
-                            mCalendar.get(Calendar.MINUTE),
-                            mCalendar.get(Calendar.SECOND)
-                        )
-
-                canvas.drawText(timeText, mXOffset, mYOffset + 2*mTextPaint.textSize, mTextPaint)
+            if (mTwentyFourHour) {
+                return String.format(
+                    "%02d:%02d:%02d",
+                    mCalendar.get(Calendar.HOUR_OF_DAY),
+                    mCalendar.get(Calendar.MINUTE),
+                    mCalendar.get(Calendar.SECOND)
+                )
+            }
+            else {
+                val rawHour = mCalendar.get(Calendar.HOUR)
+                val sanitizedHour = if (rawHour == 0) 12 else rawHour
+                return String.format(
+                    "%d:%02d:%02d",
+                    sanitizedHour,
+                    mCalendar.get(Calendar.MINUTE),
+                    mCalendar.get(Calendar.SECOND)
+                )
             }
         }
 
