@@ -5,4 +5,5 @@
     <string name="title_activity_configuration">ConfigurationActivity</string>
     <string name="complication_provider_name">NightWear Blood Glucose</string>
     <string name="complication_no_data">---</string>
+    <string name="tile_semantics_bg">Blood Glucose Value</string>
 </resources>
