@@ -102,16 +102,12 @@ class NightWearTileService : TileService() {
         .build()
 
     private fun arcColor(bloodGlucose: BloodGlucose?): Int {
-        var color = 0
-
-        when (bloodGlucose?.glucoseLevel_mgdl) {
-            in 0..BG_RANGE_LOW -> color = R.color.bg_low
-            in BG_RANGE_LOW..BG_RANGE_HIGH -> color = R.color.bg_in_range
-            in BG_RANGE_HIGH..Int.MAX_VALUE -> color = R.color.bg_high
-            else -> color = R.color.background
+        return when (bloodGlucose?.glucoseLevel_mgdl) {
+            in 0..BG_RANGE_LOW -> R.color.bg_low
+            in BG_RANGE_LOW..BG_RANGE_HIGH -> R.color.bg_in_range
+            in BG_RANGE_HIGH..Int.MAX_VALUE -> R.color.bg_high
+            else -> R.color.background
         }
-
-        return color
     }
 
     private fun currentTrendText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
