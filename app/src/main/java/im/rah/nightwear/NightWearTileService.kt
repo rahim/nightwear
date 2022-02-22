@@ -21,25 +21,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.guava.future
 
-private const val RESOURCES_VERSION = "1"
-
-
-private const val BG_UNIT_MG = "mg/dL"
-private const val BG_UNIT_MMOL = "mmol/l"
-
-private const val BG_RANGE_LOW = 60;
-private const val BG_RANGE_HIGH = 210;
-
-private const val ARC_TOTAL_DEGREES = 360f
-private const val TILE_REFRESH_INTERVAL_MINUTES = 1
-private const val ID_CLICK_REFRESH_BG = "click_refresh_bg"
-private val PROGRESS_BAR_THICKNESS = dp(6f)
-
-
 /**
  * Creates a tile, showing current blood glucose value and the trend arrow.
  */
 class NightWearTileService : TileService() {
+    companion object {
+        private const val RESOURCES_VERSION = "1"
+
+        private const val BG_UNIT_MG = "mg/dL"
+        private const val BG_UNIT_MMOL = "mmol/l"
+        private const val BG_RANGE_LOW = 60
+        private const val BG_RANGE_HIGH = 210
+
+        private const val ARC_TOTAL_DEGREES = 360f
+        private const val TILE_REFRESH_INTERVAL_MINUTES = 1
+        private const val ID_CLICK_REFRESH_BG = "click_refresh_bg"
+        private val PROGRESS_BAR_THICKNESS = dp(6f)
+    }
+
     // For coroutines, use a custom scope we can cancel when the service is destroyed
     private val serviceScope = CoroutineScope(Dispatchers.IO)
 
