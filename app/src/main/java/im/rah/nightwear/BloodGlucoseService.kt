@@ -2,7 +2,7 @@ package im.rah.nightwear
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.support.wearable.complications.ProviderUpdateRequester
 import android.util.Log
 import com.android.volley.Request
@@ -86,7 +86,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         return nightscoutBaseUrl + NS_CURRENT_ENTRY_PATH
     }
 
-    private fun refresh() {
+    fun refresh(force: Boolean = false) {
         Log.d(tag, "Refresh, latest reading age: " + latestReadingAge().seconds)
 
         if (nightscoutBaseUrl == "") return
@@ -96,7 +96,10 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         // - it can grow if the sensor is not reporting or is in warm up
         // - it can grow if the collector is unable to push to Share or NightScout
         // - it can grow if NightScout is unable to pull from Share
-        if (latestReadingAge() < SENSOR_REFRESH_INTERVAL) return
+        if (!force && latestReadingAge() < SENSOR_REFRESH_INTERVAL) {
+            Log.d(tag, "Latest reading too fresh and force not set, returning without refresh")
+            return
+        }
         // don't make requests more than once every 30s
         if (Duration.between(lastRequestAdded, Instant.now()) < Duration.ofSeconds(30)) return
 

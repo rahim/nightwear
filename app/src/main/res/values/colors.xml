@@ -2,4 +2,7 @@
 <resources>
     <color name="background">#000000</color>
     <color name="digital_text">#ffffff</color>
+    <color name="bg_high">#ffbc00</color>
+    <color name="bg_in_range">#8fcb3a</color>
+    <color name="bg_low">#e80a04</color>
 </resources>
