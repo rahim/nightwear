@@ -102,4 +102,5 @@
         </service>
     </application>
 
+    <uses-sdk tools:overrideLibrary="androidx.wear.tiles.renderer"/>
 </manifest>
