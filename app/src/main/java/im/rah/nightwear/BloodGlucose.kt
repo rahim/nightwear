@@ -25,6 +25,11 @@ class BloodGlucose(val glucoseLevel_mgdl: Int, val sensorTime: Long, val directi
         RATE_OUT_OF_RANGE ("⇕",   "⇕")
     }
 
+    enum class Unit(val label: String) {
+        MMOL ("mmol/L"),
+        MGDL ("mg/dL")
+    }
+
     companion object {
         const val MMOLL_TO_MGDL = 18.0182
         val OLD_READING_THRESHOLD = Duration.ofMinutes(11)

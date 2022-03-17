@@ -28,8 +28,6 @@ class NightWearTileService : TileService() {
     companion object {
         private const val RESOURCES_VERSION = "1"
 
-        private const val BG_UNIT_MG = "mg/dL"
-        private const val BG_UNIT_MMOL = "mmol/l"
         private const val BG_RANGE_LOW = 60
         private const val BG_RANGE_HIGH = 210
 
@@ -50,10 +48,7 @@ class NightWearTileService : TileService() {
         }
 
         val deviceParams = requestParams.deviceParameters!!
-
         val bg = bloodGlucoseService.latestBg
-
-
 
         Tile.Builder()
             .setResourcesVersion(RESOURCES_VERSION)
@@ -120,7 +115,6 @@ class NightWearTileService : TileService() {
             .build()
     }
 
-
     private fun currentBloodGlucoseText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
         var text = getString(R.string.bg_placeholder)
         if(bg!=null)
@@ -148,10 +142,8 @@ class NightWearTileService : TileService() {
 
     private fun bloodGlucoseUnitText(deviceParameters: DeviceParameters): Text {
         var prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
-
-        var unit = BG_UNIT_MG
-
-        if(prefs.getBoolean("mmol", true))  unit = BG_UNIT_MMOL
+        var unit = if (prefs.getBoolean("mmol", true)) BloodGlucose.Unit.MMOL.label
+                   else BloodGlucose.Unit.MGDL.label
 
         return Text.Builder()
             .setText(unit)
