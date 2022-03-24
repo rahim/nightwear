@@ -106,7 +106,7 @@ class NightWearTileService : TileService() {
 
     private fun currentTrendText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
         var text = "-"
-        if(bg!=null)
+        if (bg != null)
             text = bg.directionLabel(true);
 
         return Text.Builder()
@@ -116,9 +116,10 @@ class NightWearTileService : TileService() {
     }
 
     private fun currentBloodGlucoseText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
-        var text = getString(R.string.bg_placeholder)
-        if(bg!=null)
-            text = bg.glucoseLevel_mgdl.toString();
+        var prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
+        var mmol = prefs.getBoolean("mmol", true)
+        var text = if (bg != null) (bg as BloodGlucose).glucose(mmol)
+                   else getString(R.string.bg_placeholder)
 
         return Text.Builder()
             .setText(text)
