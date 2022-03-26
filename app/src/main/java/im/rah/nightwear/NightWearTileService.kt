@@ -105,7 +105,7 @@ class NightWearTileService : TileService() {
     }
 
     private fun currentTrendText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
-        var text = bg?.directionLabel() ?: "-"
+        val text = bg?.directionLabel() ?: "-"
 
         return Text.Builder()
             .setText(text)
@@ -114,10 +114,9 @@ class NightWearTileService : TileService() {
     }
 
     private fun currentBloodGlucoseText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
-        var prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
-        var mmol = prefs.getBoolean("mmol", true)
-        var text = if (bg != null) (bg as BloodGlucose).glucose(mmol)
-                   else getString(R.string.bg_placeholder)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
+        val mmol = prefs.getBoolean("mmol", true)
+        val text = bg?.glucose(mmol) ?: getString(R.string.bg_placeholder)
 
         return Text.Builder()
             .setText(text)
@@ -140,8 +139,8 @@ class NightWearTileService : TileService() {
     }
 
     private fun bloodGlucoseUnitText(deviceParameters: DeviceParameters): Text {
-        var prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
-        var unit = if (prefs.getBoolean("mmol", true)) BloodGlucose.Unit.MMOL.label
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
+        val unit = if (prefs.getBoolean("mmol", true)) BloodGlucose.Unit.MMOL.label
                    else BloodGlucose.Unit.MGDL.label
 
         return Text.Builder()
