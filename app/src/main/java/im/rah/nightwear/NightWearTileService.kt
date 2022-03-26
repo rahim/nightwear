@@ -77,9 +77,9 @@ class NightWearTileService : TileService() {
             .addContent(statusArc(bloodGlucose))
             .addContent(
                 Column.Builder()
-                    .addContent(currentTrendText(bloodGlucose, deviceParameters))
                     .addContent(currentBloodGlucoseText(bloodGlucose, deviceParameters))
                     .addContent(bloodGlucoseUnitText(deviceParameters))
+                    .addContent(readingAgeText(bloodGlucose, deviceParameters))
                     .build())
             .build()
 
@@ -116,7 +116,7 @@ class NightWearTileService : TileService() {
     private fun currentBloodGlucoseText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
         val mmol = prefs.getBoolean("mmol", true)
-        val text = bg?.glucose(mmol) ?: getString(R.string.bg_placeholder)
+        val text = bg?.combinedString(mmol) ?: getString(R.string.bg_placeholder)
 
         return Text.Builder()
             .setText(text)
@@ -145,6 +145,16 @@ class NightWearTileService : TileService() {
 
         return Text.Builder()
             .setText(unit)
+            .setFontStyle(FontStyles.title3(deviceParameters).build())
+            .build()
+    }
+
+    private fun readingAgeText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
+        val readingAgeText = if (bg != null) bg.readingAge().toMinutes().toString() + "m"
+                             else ""
+
+        return Text.Builder()
+            .setText(readingAgeText)
             .setFontStyle(FontStyles.title3(deviceParameters).build())
             .build()
     }
