@@ -6,4 +6,8 @@
     <string name="complication_provider_name">NightWear Blood Glucose</string>
     <string name="complication_no_data">---</string>
     <string name="tile_semantics_bg">Blood Glucose Value</string>
+    <plurals name="minutes_ago">
+        <item quantity="one">1 min ago</item>
+        <item quantity="other">%d mins ago</item>
+    </plurals>
 </resources>

@@ -104,15 +104,6 @@ class NightWearTileService : TileService() {
         }
     }
 
-    private fun currentTrendText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
-        val text = bg?.directionLabel() ?: "-"
-
-        return Text.Builder()
-            .setText(text)
-            .setFontStyle(FontStyles.display3(deviceParameters).build())
-            .build()
-    }
-
     private fun currentBloodGlucoseText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
         val mmol = prefs.getBoolean("mmol", true)
@@ -150,11 +141,16 @@ class NightWearTileService : TileService() {
     }
 
     private fun readingAgeText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
-        val readingAgeText = if (bg != null) bg.readingAge().toMinutes().toString() + "m"
-                             else ""
+        val readingAgeInMinutes = bg?.readingAge()?.toMinutes()?.toInt() ?: Int.MAX_VALUE
+        val readingAgeString =
+            if (bg != null)
+                resources.getQuantityString(
+                    R.plurals.minutes_ago, readingAgeInMinutes, readingAgeInMinutes
+                )
+            else ""
 
         return Text.Builder()
-            .setText(readingAgeText)
+            .setText(readingAgeString)
             .setFontStyle(FontStyles.title3(deviceParameters).build())
             .build()
     }
