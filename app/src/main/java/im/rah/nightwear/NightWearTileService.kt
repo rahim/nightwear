@@ -28,8 +28,8 @@ class NightWearTileService : TileService() {
     companion object {
         private const val RESOURCES_VERSION = "1"
 
-        private const val BG_RANGE_LOW = 60
-        private const val BG_RANGE_HIGH = 210
+        private const val BG_RANGE_LOW = 80
+        private const val BG_RANGE_HIGH = 180
 
         private const val ARC_TOTAL_DEGREES = 360f
         private const val TILE_REFRESH_INTERVAL_MINUTES = 1
