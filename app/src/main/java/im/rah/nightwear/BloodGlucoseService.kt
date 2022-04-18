@@ -119,7 +119,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         lastRequestAdded = Instant.now()
         val stringRequest = StringRequest(
             Request.Method.GET, nsRecentEntriesUrl(),
-            Response.Listener<String> { response ->
+            { response ->
                 Log.d(tag, "recent bgs received, parsing...")
                 try {
                     recentEntries = BloodGlucose.parseTabSeparatedRecent(response)
@@ -132,7 +132,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
                     Log.d(tag, "ParseException for response: " + response)
                 }
             },
-            Response.ErrorListener {
+            {
                 Log.d(tag, "request error")
             })
         stringRequest.tag = this
