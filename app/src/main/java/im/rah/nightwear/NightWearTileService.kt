@@ -107,7 +107,9 @@ class NightWearTileService : TileService() {
     private fun currentBloodGlucoseText(bg: BloodGlucose?, deviceParameters: DeviceParameters): Text {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
         val mmol = prefs.getBoolean("mmol", true)
-        val text = bg?.combinedString(mmol) ?: getString(R.string.bg_placeholder)
+        val text = bg?.let {
+            BloodGlucosePresenter(it, mmol = mmol).combinedString()
+        } ?: getString(R.string.bg_placeholder)
 
         return Text.Builder()
             .setText(text)

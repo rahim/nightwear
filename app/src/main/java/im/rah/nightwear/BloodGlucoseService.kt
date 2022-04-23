@@ -124,6 +124,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
                 try {
                     recentEntries = BloodGlucose.parseTabSeparatedRecent(response)
                     Log.d(tag, "  " + latestBg!! +  " notifying " + onDataUpdateListeners.size + " listeners")
+                    Log.d(tag, "  𝚫 " + BloodGlucoseDeltaPresenter(latestDelta!!))
                     onDataUpdateListeners.forEach {
                         it.invoke(latestBg!!)
                     }
