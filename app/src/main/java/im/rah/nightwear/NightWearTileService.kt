@@ -49,6 +49,7 @@ class NightWearTileService : TileService() {
 
         val deviceParams = requestParams.deviceParameters!!
         val bg = bloodGlucoseService.latestBg
+        val bgDelta = bloodGlucoseService.latestDelta
 
         Tile.Builder()
             .setResourcesVersion(RESOURCES_VERSION)
@@ -60,7 +61,7 @@ class NightWearTileService : TileService() {
                             .setLayout(
                                 Layout.Builder()
                                     .setRoot(
-                                        layout(bg, deviceParams)
+                                        layout(bg, bgDelta, deviceParams)
                                     )
                                     .build()
                             )
@@ -70,7 +71,7 @@ class NightWearTileService : TileService() {
             ).build()
     }
 
-    private fun layout(bloodGlucose: BloodGlucose?, deviceParameters: DeviceParameters) =
+    private fun layout(bloodGlucose: BloodGlucose?, bloodGlucoseDelta: BloodGlucoseDelta?, deviceParameters: DeviceParameters) =
         Box.Builder()
             .setWidth(expand())
             .setHeight(expand())
@@ -78,7 +79,7 @@ class NightWearTileService : TileService() {
             .addContent(
                 Column.Builder()
                     .addContent(currentBloodGlucoseText(bloodGlucose, deviceParameters))
-                    .addContent(bloodGlucoseUnitText(deviceParameters))
+                    .addContent(currentBloodGlucoseDeltaText(bloodGlucoseDelta, deviceParameters))
                     .addContent(readingAgeText(bloodGlucose, deviceParameters))
                     .build())
             .build()
@@ -131,13 +132,15 @@ class NightWearTileService : TileService() {
             .build()
     }
 
-    private fun bloodGlucoseUnitText(deviceParameters: DeviceParameters): Text {
+    private fun currentBloodGlucoseDeltaText(bgDelta: BloodGlucoseDelta?, deviceParameters: DeviceParameters): Text {
         val prefs = PreferenceManager.getDefaultSharedPreferences(this.applicationContext)
-        val unit = if (prefs.getBoolean("mmol", true)) BloodGlucose.Unit.MMOL.label
-                   else BloodGlucose.Unit.MGDL.label
+        val mmol = prefs.getBoolean("mmol", true)
+        val text = bgDelta?.let {
+            BloodGlucoseDeltaPresenter(it, mmol = mmol, showUnits = true).toString()
+        } ?: getString(R.string.bg_placeholder)
 
         return Text.Builder()
-            .setText(unit)
+            .setText(text)
             .setFontStyle(FontStyles.title3(deviceParameters).build())
             .build()
     }
