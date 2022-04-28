@@ -12,22 +12,29 @@ class BloodGlucoseDeltaPresenterTest {
     @Test
     fun `mgdl positive`() {
         assertThat(
-            BloodGlucoseDeltaPresenter(deltaInMgdl(42),false).toString()
+            BloodGlucoseDeltaPresenter(deltaInMgdl(42), mmol = false).toString()
         ).isEqualTo("+42 mg/dL")
     }
 
     @Test
     fun `mgdl negative`() {
         assertThat(
-            BloodGlucoseDeltaPresenter(deltaInMgdl(-42),false).toString()
+            BloodGlucoseDeltaPresenter(deltaInMgdl(-42), mmol = false).toString()
         ).isEqualTo("-42 mg/dL")
     }
 
     @Test
     fun `mgdl zero`() {
         assertThat(
-            BloodGlucoseDeltaPresenter(deltaInMgdl(0),false).toString()
+            BloodGlucoseDeltaPresenter(deltaInMgdl(0), mmol = false).toString()
         ).isEqualTo("0 mg/dL")
+    }
+
+    @Test
+    fun `mgdl units hidden`() {
+        assertThat(
+            BloodGlucoseDeltaPresenter(deltaInMgdl(42), mmol = false, showUnits = false).toString()
+        ).isEqualTo("+42")
     }
 
     // mmol/L ---------------------
