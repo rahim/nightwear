@@ -6,10 +6,10 @@ import java.text.DecimalFormat
 // inconsistencies when displaying in mmol/L - instead we have to calculate the difference in the
 // display units.
 class BloodGlucoseDelta(val first: BloodGlucose, val second: BloodGlucose) {
-    fun in_mgdl() = second.glucoseLevel_mgdl - first.glucoseLevel_mgdl
-    fun in_mmol() = rounded_mmol(second) - rounded_mmol(first)
+    fun inMgdl() = second.glucoseLevel_mgdl - first.glucoseLevel_mgdl
+    fun inMmol() = roundedMmol(second) - roundedMmol(first)
 
-    private fun rounded_mmol(bg: BloodGlucose): Double {
+    private fun roundedMmol(bg: BloodGlucose): Double {
         val mmol : Double = bg.glucoseLevel_mgdl / BloodGlucose.MMOLL_TO_MGDL
         return DecimalFormat("#.#").format(mmol).toDouble()
     }
