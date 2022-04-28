@@ -1,14 +1,16 @@
 package im.rah.nightwear
 
-// The modelling here is clean and intuitive, but using mg/dL differences will lead to rounding
-// inconsistencies for mmol/L with both the NightScout displayed deltas, but also with what we
-// we expect from the change observed.
-//
-// To overcome this we'll need to convert units before calculating the difference.
-class BloodGlucoseDelta(val delta_mgdl: Int) {
-    companion object {
-        fun between(first: BloodGlucose, second: BloodGlucose): BloodGlucoseDelta {
-            return BloodGlucoseDelta(second.glucoseLevel_mgdl - first.glucoseLevel_mgdl)
-        }
+import java.text.DecimalFormat
+
+// Initially this was modelled, storing a single mg/dL difference, but this leads to rounding
+// inconsistencies when displaying in mmol/L - instead we have to calculate the difference in the
+// display units.
+class BloodGlucoseDelta(val first: BloodGlucose, val second: BloodGlucose) {
+    fun in_mgdl() = second.glucoseLevel_mgdl - first.glucoseLevel_mgdl
+    fun in_mmol() = rounded_mmol(second) - rounded_mmol(first)
+
+    private fun rounded_mmol(bg: BloodGlucose): Double {
+        val mmol : Double = bg.glucoseLevel_mgdl / BloodGlucose.MMOLL_TO_MGDL
+        return DecimalFormat("#.#").format(mmol).toDouble()
     }
 }

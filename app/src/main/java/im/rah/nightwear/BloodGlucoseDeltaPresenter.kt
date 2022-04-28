@@ -7,16 +7,16 @@ class BloodGlucoseDeltaPresenter(private val bgDelta: BloodGlucoseDelta,
                                  private val showUnits: Boolean = true) {
     override fun toString(): String {
         return if (mmol) {
-            prefix() + DecimalFormat("0.0").format(bgDelta.delta_mgdl / BloodGlucose.MMOLL_TO_MGDL) + postfix()
+            prefix() + DecimalFormat("0.0").format(bgDelta.in_mmol()) + postfix()
         }
         else {
-            prefix() + bgDelta.delta_mgdl.toString() + postfix()
+            prefix() + bgDelta.in_mgdl().toString() + postfix()
         }
     }
 
     private fun prefix(): String {
         return when {
-            bgDelta.delta_mgdl > 0 -> { "+" }
+            (mmol && bgDelta.in_mmol() > 0) || (!mmol && bgDelta.in_mgdl() > 0) -> { "+" }
             else -> { "" }
         }
     }

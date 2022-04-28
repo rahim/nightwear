@@ -26,7 +26,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         if (latestBg == null) return null
         if (penultimateBg == null) return null
 
-        return BloodGlucoseDelta.between(penultimateBg!!, latestBg!!)
+        return BloodGlucoseDelta(penultimateBg!!, latestBg!!)
     }
     var onDataUpdateListeners: MutableList<(BloodGlucose)->Unit> = mutableListOf()
 
