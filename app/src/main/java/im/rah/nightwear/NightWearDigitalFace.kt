@@ -196,7 +196,16 @@ class NightWearDigitalFace : CanvasWatchFaceService() {
             val bgText = BloodGlucosePresenter(bloodGlucoseService.latestBg as BloodGlucose, mmol = mMmol).combinedString()
             canvas.drawText(bgText, mXOffset, mYOffset, mTextPaint)
 
-            if (!mAmbient) {
+            if (mAmbient) {
+                canvas.drawText(bgText, mXOffset, mYOffset, mTextPaint)
+            }
+            else {
+                val deltaText = bloodGlucoseService.latestDelta?.let {
+                    " " + BloodGlucoseDeltaPresenter(it, mmol = mMmol, showUnits = false).toString()
+                } ?: ""
+
+                canvas.drawText(bgText + deltaText, mXOffset, mYOffset, mTextPaint)
+
                 val readingAgeText = bloodGlucoseService.latestReadingAge().toMinutes().toString() + "m"
                 canvas.drawText(readingAgeText, mXOffset, mYOffset + mTextPaint.textSize, mTextPaint)
                 canvas.drawText(timeText(), mXOffset, mYOffset + 2*mTextPaint.textSize, mTextPaint)
