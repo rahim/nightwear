@@ -36,8 +36,10 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
             bg = bloodGlucoseService.latestBg!!
         }
 
+        val bgDelta = bloodGlucoseService.latestDelta
+
         val builder = ComplicationData.Builder(type)
-        
+
         if (type == ComplicationData.TYPE_SHORT_TEXT) {
             val bgText: String = BloodGlucosePresenter(bg, mmol = mmol, markOld = true, saferUnicode = true).combinedString()
 
@@ -58,13 +60,17 @@ class NightWearComplicationProviderService : ComplicationProviderService() {
         }
 
         if (type == ComplicationData.TYPE_LONG_TEXT) {
-            val bgText: String = BloodGlucosePresenter(bg, mmol = mmol, markOld = false, saferUnicode = true).combinedString() + " (^1)" // the ^1 is interpolated with the age
+            val bgText: String = BloodGlucosePresenter(bg, mmol = mmol, markOld = false, saferUnicode = true).combinedString()
+            val deltaText = bgDelta?.let {
+                " " + BloodGlucoseDeltaPresenter(it, mmol = mmol, showUnits = true).toString()
+            } ?: ""
+            val complicationText = bgText + deltaText + " (^1)" // the ^1 is interpolated with the age
 
-            Log.d(TAG, "updating complication data (LONG_TEXT), bgText: " + bgText)
+            Log.d(TAG, "updating complication data (LONG_TEXT), complicationText: " + complicationText)
 
             builder.setLongText(
                 ComplicationText.TimeDifferenceBuilder()
-                    .setSurroundingText(bgText)
+                    .setSurroundingText(complicationText)
                     .setReferencePeriodStart(bg.sensorTime)
                     .setReferencePeriodEnd(bg.sensorTime)
                     .setShowNowText(false)
