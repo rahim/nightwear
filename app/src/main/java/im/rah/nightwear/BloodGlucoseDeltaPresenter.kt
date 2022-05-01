@@ -16,7 +16,7 @@ class BloodGlucoseDeltaPresenter(private val bgDelta: BloodGlucoseDelta,
 
     private fun prefix(): String {
         return when {
-            (mmol && bgDelta.inMmol() > 0) || (!mmol && bgDelta.inMgdl() > 0) -> { "+" }
+            (mmol && bgDelta.inMmol() >= 0) || (!mmol && bgDelta.inMgdl() >= 0) -> { "+" }
             else -> { "" }
         }
     }

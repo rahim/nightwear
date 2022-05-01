@@ -27,7 +27,7 @@ class BloodGlucoseDeltaPresenterTest {
     fun `mgdl zero`() {
         assertThat(
             BloodGlucoseDeltaPresenter(deltaInMgdl(0), mmol = false).toString()
-        ).isEqualTo("0 mg/dL")
+        ).isEqualTo("+0 mg/dL")
     }
 
     @Test
@@ -68,10 +68,10 @@ class BloodGlucoseDeltaPresenterTest {
     }
 
     @Test
-    fun `mmol zero has no sign`() {
+    fun `mmol zero shows plus sign`() {
         assertThat(
             BloodGlucoseDeltaPresenter(deltaInMmol(0.0),true).toString()
-        ).isEqualTo("0.0 mmol/L")
+        ).isEqualTo("+0.0 mmol/L")
     }
 
     private fun bgInMgdl(mgdl : Int) =
