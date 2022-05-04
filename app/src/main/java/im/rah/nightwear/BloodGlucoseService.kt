@@ -39,7 +39,6 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         const val TAG:String = "BloodGlucoseService"
         val SENSOR_REFRESH_INTERVAL:Duration = Duration.ofMinutes(5)
 
-        const val NS_CURRENT_ENTRY_PATH = "/api/v1/entries/current"
         const val NS_RECENT_ENTRIES_PATH = "/api/v1/entries/sgv"
 
         private var instance:BloodGlucoseService? = null
