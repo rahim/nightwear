@@ -18,7 +18,16 @@ import kotlin.concurrent.schedule
 import android.content.ComponentName
 
 class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
-    var latestBg:BloodGlucose? = null
+    var recentEntries:List<BloodGlucose?> = List<BloodGlucose?>(0) { null }
+    val latestBg get() = recentEntries.firstOrNull()
+    val penultimateBg get() = recentEntries.elementAtOrNull(1)
+    val latestDelta: BloodGlucoseDelta? get() {
+        if (recentEntries.size < 2) return null
+        if (latestBg == null) return null
+        if (penultimateBg == null) return null
+
+        return BloodGlucoseDelta(penultimateBg!!, latestBg!!)
+    }
     var onDataUpdateListeners: MutableList<(BloodGlucose)->Unit> = mutableListOf()
 
     private var nightscoutBaseUrl = ""
@@ -30,7 +39,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         const val TAG:String = "BloodGlucoseService"
         val SENSOR_REFRESH_INTERVAL:Duration = Duration.ofMinutes(5)
 
-        const val NS_CURRENT_ENTRY_PATH = "/api/v1/entries/current"
+        const val NS_RECENT_ENTRIES_PATH = "/api/v1/entries/sgv"
 
         private var instance:BloodGlucoseService? = null
 
@@ -78,12 +87,12 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
     override fun onSharedPreferenceChanged(prefs: SharedPreferences, key: String) {
         Log.d(tag, "prefs changed")
         if (key == "nightscoutBaseUrl") {
-          nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")!!
+            nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")!!
         }
     }
 
-    private fun nsCurrentEntryUrl() : String {
-        return nightscoutBaseUrl + NS_CURRENT_ENTRY_PATH
+    private fun nsRecentEntriesUrl() : String {
+        return nightscoutBaseUrl + NS_RECENT_ENTRIES_PATH
     }
 
     fun refresh(force: Boolean = false) {
@@ -108,12 +117,13 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
 
         lastRequestAdded = Instant.now()
         val stringRequest = StringRequest(
-            Request.Method.GET, nsCurrentEntryUrl(),
-            Response.Listener<String> { response ->
-                Log.d(tag, "bg received, parsing...")
+            Request.Method.GET, nsRecentEntriesUrl(),
+            { response ->
+                Log.d(tag, "recent bgs received, parsing...")
                 try {
-                    latestBg = BloodGlucose.parseTabSeparatedCurrent(response)
-                    Log.d(tag, "  " + latestBg!!.combinedString() +  " notifying " + onDataUpdateListeners.size + " listeners")
+                    recentEntries = BloodGlucose.parseTabSeparatedRecent(response)
+                    Log.d(tag, "  " + latestBg!! +  " notifying " + onDataUpdateListeners.size + " listeners")
+                    Log.d(tag, "  𝚫 " + BloodGlucoseDeltaPresenter(latestDelta!!))
                     onDataUpdateListeners.forEach {
                         it.invoke(latestBg!!)
                     }
@@ -122,7 +132,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
                     Log.d(tag, "ParseException for response: " + response)
                 }
             },
-            Response.ErrorListener {
+            {
                 Log.d(tag, "request error")
             })
         stringRequest.tag = this

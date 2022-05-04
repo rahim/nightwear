@@ -54,28 +54,12 @@ class BloodGlucose(val glucoseLevel_mgdl: Int, val sensorTime: Long, val directi
             }
         }
 
-        fun glucose(mgdl: Int, mmol: Boolean = true): String {
-            return if (mmol) {
-                DecimalFormat("##.0").format(mgdl / MMOLL_TO_MGDL)
-            }
-            else {
-                mgdl.toString()
-            }
+        @JvmStatic fun parseTabSeparatedRecent(str: String): List<BloodGlucose?> {
+            return str.lines().map { parseTabSeparatedCurrent(it) }
         }
     }
 
-    fun glucose(mmol: Boolean = true) = glucose(glucoseLevel_mgdl, mmol)
-    fun directionLabel(saferUnicode: Boolean = false) =
-        if (saferUnicode) direction.saferLabel else direction.bolderLabel
-    fun annotation(markOld: Boolean, saferUnicode: Boolean = false) : String {
-        return when {
-            markOld && readingAge() > OLD_READING_THRESHOLD -> "OLD"
-            else -> directionLabel(saferUnicode)
-        }
-    }
-    fun combinedString(mmol: Boolean = true, markOld: Boolean = false, saferUnicode: Boolean = false) =
-        glucose(mmol) + " " + annotation(markOld, saferUnicode)
-    override fun toString() = combinedString()
+    override fun toString() = BloodGlucosePresenter(this).combinedString()
 
     fun sensorTimeInstant() = Instant.ofEpochMilli(sensorTime)
     fun readingAge() = Duration.between(sensorTimeInstant(), Instant.now())
