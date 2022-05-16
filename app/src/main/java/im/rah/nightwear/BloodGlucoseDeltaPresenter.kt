@@ -1,11 +1,14 @@
 package im.rah.nightwear
 
+import org.threeten.bp.temporal.ChronoUnit
 import java.text.DecimalFormat
 
 class BloodGlucoseDeltaPresenter(private val bgDelta: BloodGlucoseDelta,
                                  private val mmol: Boolean = true,
                                  private val showUnits: Boolean = true) {
     override fun toString(): String {
+        if (bgDelta.unexpectedInterval()) return "+?" + postfix()
+
         return if (mmol) {
             prefix() + DecimalFormat("0.0").format(bgDelta.inMmol()) + postfix()
         }

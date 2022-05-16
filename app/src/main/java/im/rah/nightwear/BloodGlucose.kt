@@ -3,7 +3,6 @@ package im.rah.nightwear
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import java.lang.Exception
-import java.text.DecimalFormat
 import java.text.ParseException
 
 class BloodGlucose(val glucoseLevel_mgdl: Int, val sensorTime: Long, val direction: Direction) {
