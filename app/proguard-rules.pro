@@ -12,15 +12,16 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-keepattributes LineNumberTable,SourceFile
+-renamesourcefileattribute SourceFile
 
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
 }
+
+-verbose
+
+-printseeds obfuscation/seeds.txt
+-printusage obfuscation/unused.txt
+-printmapping obfuscation/mapping.txt
