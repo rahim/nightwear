@@ -44,26 +44,25 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.5.2'
-    implementation 'com.google.android.support:wearable:2.4.0'
-    implementation 'com.google.android.gms:play-services-wearable:16.0.1'
+    implementation 'com.google.android.support:wearable:2.9.0'
+    implementation 'com.google.android.gms:play-services-wearable:17.1.0'
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.wear:wear:1.2.0'
     implementation 'androidx.palette:palette-ktx:1.0.0'
-    implementation 'androidx.wear.tiles:tiles:1.0.0'
+    implementation 'androidx.wear.tiles:tiles:1.0.1'
     implementation 'com.android.volley:volley:1.2.1'
-    implementation 'androidx.core:core-ktx:1.0.1'
+    implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'org.threeten:threetenbp:1.4.1'
-    implementation 'androidx.preference:preference-ktx:1.1.1'
-    compileOnly 'com.google.android.wearable:wearable:2.4.0'
-
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+    compileOnly 'com.google.android.wearable:wearable:2.9.0'
 
     // Preview Tiles in an Activity for testing purposes
-    debugImplementation "androidx.wear.tiles:tiles-renderer:1.0.0"
+    debugImplementation "androidx.wear.tiles:tiles-renderer:1.0.1"
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation "com.google.truth:truth:1.1"
-    testImplementation 'androidx.test:core:1.0.0'
+    testImplementation 'androidx.test:core:1.4.0'
 }
