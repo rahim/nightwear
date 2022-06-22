@@ -1,6 +1,8 @@
 package im.rah.nightwear
 
 import org.threeten.bp.Duration
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 
 // Initially this was modelled, storing a single mg/dL difference, but this leads to rounding
@@ -20,6 +22,8 @@ class BloodGlucoseDelta(val first: BloodGlucose, val second: BloodGlucose) {
 
     private fun roundedMmol(bg: BloodGlucose): Double {
         val mmol : Double = bg.glucoseLevel_mgdl / BloodGlucose.MMOLL_TO_MGDL
-        return DecimalFormat("#.#").format(mmol).toDouble()
+        //return DecimalFormat("#.#").format(mmol).toDouble()
+        val bd : BigDecimal = BigDecimal.valueOf(mmol).setScale(1, RoundingMode.HALF_UP)
+        return bd.toDouble()
     }
 }

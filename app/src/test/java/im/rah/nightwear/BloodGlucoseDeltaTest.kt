@@ -2,6 +2,7 @@ package im.rah.nightwear
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import java.util.*
 import kotlin.math.roundToInt
 
 class BloodGlucoseDeltaTest {
@@ -16,7 +17,7 @@ class BloodGlucoseDeltaTest {
     }
 
     @Test
-    fun `#inMgdl is the post rounded difference`() {
+    fun `#inMmol is the post rounded difference`() {
         val mgdl1 = (4.2* BloodGlucose.MMOLL_TO_MGDL).roundToInt()
         val mgdl2 = (8.4* BloodGlucose.MMOLL_TO_MGDL).roundToInt()
         val bg1 = BloodGlucose(mgdl1, direction = BloodGlucose.Direction.NONE, sensorTime = 0)
@@ -25,5 +26,21 @@ class BloodGlucoseDeltaTest {
         assertThat(
             BloodGlucoseDelta(bg1, bg2).inMmol()
         ).isEqualTo(4.2)
+    }
+
+    @Test
+    fun `#inMmol with German locale`() {
+        val originalLocale = Locale.getDefault()
+        Locale.setDefault(Locale.GERMAN)
+        val mgdl1 = (4.2* BloodGlucose.MMOLL_TO_MGDL).roundToInt()
+        val mgdl2 = (8.4* BloodGlucose.MMOLL_TO_MGDL).roundToInt()
+        val bg1 = BloodGlucose(mgdl1, direction = BloodGlucose.Direction.NONE, sensorTime = 0)
+        val bg2 = BloodGlucose(mgdl2, direction = BloodGlucose.Direction.NONE, sensorTime = 0)
+
+        assertThat(
+            BloodGlucoseDelta(bg1, bg2).inMmol()
+        ).isEqualTo(4.2)
+
+        Locale.setDefault(originalLocale)
     }
 }
