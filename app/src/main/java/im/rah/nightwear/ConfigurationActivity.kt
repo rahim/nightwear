@@ -18,7 +18,7 @@ class ConfigurationActivity : WearableActivity() {
 
     companion object {
         const val TAG:String = "ConfigurationActivity"
-        private val COMMON_TLDS = arrayOf("herokuapp.com", "azurewebsites.net")
+        private val COMMON_TLDS = arrayOf("herokuapp.com", "azurewebsites.net", "fly.dev", "up.railway.app")
         private const val DEFAULT_URL = "https://domain.herokuapp.com"
     }
 
