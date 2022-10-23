@@ -27,6 +27,7 @@ class ConfigurationActivity : WearableActivity() {
     private lateinit var urlTextView:TextView
     private lateinit var domainEditText:EditText
     private lateinit var tldSpinner:Spinner
+    private lateinit var apiSecretEditText:EditText
     private lateinit var confirmButton:Button
     private lateinit var unitToggleButton:ToggleButton
     private lateinit var timeFormatToggleButton:ToggleButton
@@ -48,6 +49,7 @@ class ConfigurationActivity : WearableActivity() {
 
         domainEditText = findViewById(R.id.domain)
         urlTextView = findViewById(R.id.url)
+        apiSecretEditText = findViewById(R.id.api_secret)
 
         tldSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>, selectedItemView: View, position: Int, id: Long) {
@@ -77,7 +79,7 @@ class ConfigurationActivity : WearableActivity() {
         confirmButton.setOnClickListener {
             thread {
                 if (urlValid()) {
-                    persistUrl()
+                    persistUrlAndSecret()
                     setResult(Activity.RESULT_OK)
                     finish()
                 }
@@ -96,6 +98,7 @@ class ConfigurationActivity : WearableActivity() {
         timeFormatToggleButton.setOnClickListener { persistTimeFormat() }
 
         loadUrlFromPrefs()
+        loadSecretFromPrefs()
         loadUnitFromPrefs()
         loadTimeFormatFromPrefs()
 
@@ -112,6 +115,11 @@ class ConfigurationActivity : WearableActivity() {
         val adapter = tldSpinner.adapter as ArrayAdapter<String>
         val tldPosition = adapter.getPosition(tld)
         tldSpinner.setSelection(tldPosition)
+    }
+
+    private fun loadSecretFromPrefs() {
+        val secret = prefs.getString("nightscoutApiSecret", "")
+        apiSecretEditText.setText(secret)
     }
 
     private fun loadUnitFromPrefs() {
@@ -147,13 +155,20 @@ class ConfigurationActivity : WearableActivity() {
         }
     }
 
-    private fun persistUrl() {
-        Log.d(TAG, "persistUrl")
+    private fun persistUrlAndSecret() {
+        Log.d(TAG, "persistUrlAndSecret")
         val url = url()
         if (prefs.getString("nighscoutBaseUrl", "") != url) {
             Log.d(TAG, "updating nighscoutBaseUrl pref")
             val edit = prefs.edit()
             edit.putString("nightscoutBaseUrl", url())
+            edit.apply()
+        }
+        val secret:String = "" + apiSecretEditText.text
+        if (prefs.getString("nighscoutApiSecret", "") != secret) {
+            Log.d(TAG, "updating nighscoutApiSecret pref")
+            val edit = prefs.edit()
+            edit.putString("nightscoutApiSecret", secret)
             edit.apply()
         }
     }
@@ -180,7 +195,11 @@ class ConfigurationActivity : WearableActivity() {
         }
     }
 
+    // TODO: update this to allow for the secret
+    //       ideally we'd differentiate the toast if we detect unauthorized headers...
     private fun urlValid() : Boolean {
+        return true //FIXME!
+
         return try {
             URL(url() + "/api/v1/status.json").readText().contains("nightscout")
         } catch (e : IOException) {
