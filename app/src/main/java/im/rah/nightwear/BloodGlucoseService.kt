@@ -58,7 +58,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         prefs.registerOnSharedPreferenceChangeListener(this)
         nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")!!
         nightscoutApiSecret = prefs.getString("nightscoutApiSecret", "")!!
-        
+
         Timer().schedule(0, 1000 * 15) { refresh() }
 
         addDataUpdateListener {
