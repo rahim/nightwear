@@ -87,20 +87,7 @@ class ConfigurationActivity : WearableActivity() {
         })
 
         confirmButton = findViewById(R.id.confirm_button)
-        confirmButton.setOnClickListener {
-            thread {
-                if (urlValid()) {
-                    persistUrlAndSecret()
-                    setResult(Activity.RESULT_OK)
-                    finish()
-                }
-                else {
-                    this.runOnUiThread {
-                        Toast.makeText(this, "Invalid URL: ${url()}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        }
+        confirmButton.setOnClickListener { handleUrlConfirmation() }
 
         unitToggleButton = findViewById(R.id.unit_toggle_button)
         unitToggleButton.setOnClickListener { persistUnit() }
@@ -203,6 +190,21 @@ class ConfigurationActivity : WearableActivity() {
             scheme + domainEditText.text + "." + tldSpinner.selectedItem
         } else {
             scheme + domainEditText.text
+        }
+    }
+
+    private fun handleUrlConfirmation() {
+        thread {
+            if (urlValid()) {
+                persistUrlAndSecret()
+                setResult(Activity.RESULT_OK)
+                finish()
+            }
+            else {
+                this.runOnUiThread {
+                    Toast.makeText(this, "Invalid URL: ${url()}", Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
 
