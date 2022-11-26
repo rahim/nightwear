@@ -262,6 +262,10 @@ class ConfigurationActivity : WearableActivity() {
             Log.d(TAG, "cause: " + e.cause.toString())
             return false
         }
+        catch(e: InterruptedException) {
+            Log.d(TAG, "InterruptedException: " + e.message)
+            return false
+        }
         catch(e: Exception) {
             Log.d(TAG, "Unexpected Exception: " + e.javaClass)
             return false
