@@ -15,15 +15,10 @@ import com.android.volley.toolbox.RequestFuture
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.common.hash.Hashing
-import org.json.JSONObject
-import java.io.IOException
-import java.net.URL
-import java.text.ParseException
 import java.util.HashMap
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import kotlin.concurrent.thread
 
 class ConfigurationActivity : WearableActivity() {
 
@@ -194,81 +189,24 @@ class ConfigurationActivity : WearableActivity() {
     }
 
     private fun handleUrlConfirmation() {
-        thread {
-            if (urlValid()) {
-                persistUrlAndSecret()
-                setResult(Activity.RESULT_OK)
-                finish()
-            }
-            else {
-                this.runOnUiThread {
-                    Toast.makeText(this, "Invalid URL: ${url()}", Toast.LENGTH_LONG).show()
-                }
+        val validator = NightScoutDomainValidator(this, url(), nightscoutApiSecret)
+        validator.onValidationSuccess {
+            Log.d(TAG, "domain validated: " + it)
+
+            persistUrlAndSecret()
+            setResult(Activity.RESULT_OK)
+            finish()
+        }
+        validator.onValidationError {
+            // TODO: conditional messages based on Exception type
+            Log.d(TAG, "domain validationError " + it.javaClass + " " + it.message)
+
+            this.runOnUiThread {
+                Toast.makeText(this, "Invalid URL: ${url()}", Toast.LENGTH_LONG).show()
             }
         }
+        validator.run()
     }
-
-    private fun testUrl() = url() + "/api/v1/status.json"
-
-    // TODO: this following duplicates much of what we're doing in BloodGlucoseService
-    //       extract a shared class or some utility there
 
     private val nightscoutApiSecret get() = "" + apiSecretEditText.text
-    private fun nsSha1HashedSecret() = Hashing.sha1().hashString(nightscoutApiSecret,Charsets.UTF_8).toString()
-
-    // TODO: ideally we'd differentiate the toast if we detect unauthorized headers...
-    // It's okay if this is blocking because it's run within a separate thread
-    private fun urlValid() : Boolean {
-        val queue = Volley.newRequestQueue(this)
-        val requestFuture : RequestFuture<String> = RequestFuture.newFuture()
-
-        Log.d(TAG, "testing " + testUrl())
-        val stringRequest = object: StringRequest(Method.GET, testUrl(), requestFuture, requestFuture)
-        {
-            @Throws(AuthFailureError::class)
-            override fun getHeaders(): Map<String, String> {
-                val headers = HashMap<String, String>()
-
-                if (nightscoutApiSecret != "") {
-                    Log.d(TAG, "adding API-SECRET header")
-                    headers.put("API-SECRET", nsSha1HashedSecret())
-                }
-                return headers
-            }
-        }
-
-        queue.add(stringRequest)
-
-        try {
-            val response = requestFuture.get(10, TimeUnit.SECONDS)
-            Log.d(TAG, "response: " + response)
-            return response.contains("nightscout")
-        }
-        catch (e: TimeoutException) {
-            // Unclear when we'd actually see this if at all, volley's TimeoutError gets wrapped in
-            // ExecutionException below
-            Log.d(TAG, "TimeoutException")
-            return false
-        }
-        catch(e: ExecutionException) {
-            // This wraps exceptions within the future
-            // eg ExecutionException: com.android.volley.NoConnectionError: java.net.UnknownHostException: Unable to resolve host "foo.bar.baz": No address associated with hostnam
-            // TODO: do something better on timeout, ie potentially still valid, third state
-            Log.d(TAG, "ExecutionException: " + e.message)
-            // invalid secret, valid domain, gives com.android.volley.AuthFailureError
-            // unresolvable domain gives com.android.volley.NoConnectionError
-            // resolvable domain, no response, com.android.volley.TimeoutError
-            // 404 (eg not a NightScout app), com.android.volley.ClientError
-            Log.d(TAG, "cause: " + e.cause.toString())
-            return false
-        }
-        catch(e: InterruptedException) {
-            Log.d(TAG, "InterruptedException: " + e.message)
-            return false
-        }
-        catch(e: Exception) {
-            Log.d(TAG, "Unexpected Exception: " + e.javaClass)
-            return false
-        }
-    }
 }
