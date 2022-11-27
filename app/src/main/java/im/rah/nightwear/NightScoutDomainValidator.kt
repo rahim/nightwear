@@ -11,21 +11,24 @@ import java.util.HashMap
 
 class NightScoutDomainValidator(val context: Context, val url: String, val secret: String) {
     private lateinit var validationSucessCallback: (String) -> Unit
-    private lateinit var validationErrorCallback: (java.lang.Exception) -> Unit
+    private lateinit var authFailureErrorCallback: (java.lang.Exception) -> Unit
+    private lateinit var otherErrorCallback: (java.lang.Exception) -> Unit
 
     companion object {
         const val TAG: String = "NightScoutUrlValidator"
         const val STATUS_PATH: String = "/api/v1/status.json"
     }
 
-    fun onValidationSuccess(callback: (String) -> Unit) {
+    fun onValidation(callback: (String) -> Unit) {
         validationSucessCallback = callback
     }
 
-    //FIXME: either add error to signature, or probably better split out to multiple callbacks
-    //       eg onAuthenticationError, etc
-    fun onValidationError(callback: (java.lang.Exception) -> Unit) {
-        validationErrorCallback = callback
+    fun onAuthFailureError(callback: (java.lang.Exception) -> Unit) {
+        authFailureErrorCallback = callback
+    }
+
+    fun onOtherError(callback: (java.lang.Exception) -> Unit) {
+        otherErrorCallback = callback
     }
 
     fun run() {
@@ -45,7 +48,10 @@ class NightScoutDomainValidator(val context: Context, val url: String, val secre
             // - unresolvable domain
             // - (after some internal volley timeout) no network connection
 
-            { validationErrorCallback.invoke(it) }
+            {
+                val callback = if (it is AuthFailureError) authFailureErrorCallback else otherErrorCallback
+                callback.invoke(it)
+            }
         )
         {
             //@Throws(AuthFailureError::class)

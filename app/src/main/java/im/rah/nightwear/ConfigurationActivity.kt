@@ -10,15 +10,6 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
-import com.android.volley.AuthFailureError
-import com.android.volley.toolbox.RequestFuture
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import com.google.common.hash.Hashing
-import java.util.HashMap
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeoutException
 
 class ConfigurationActivity : WearableActivity() {
 
@@ -150,18 +141,18 @@ class ConfigurationActivity : WearableActivity() {
 
     private fun persistUrlAndSecret() {
         Log.d(TAG, "persistUrlAndSecret")
+
         val url = url()
-        if (prefs.getString("nighscoutBaseUrl", "") != url) {
-            Log.d(TAG, "updating nighscoutBaseUrl pref")
+        if (prefs.getString("nighscoutBaseUrl", null) != url) {
+            Log.d(TAG, "updating nighscoutBaseUrl pref to: " + url)
             val edit = prefs.edit()
             edit.putString("nightscoutBaseUrl", url())
             edit.apply()
         }
-        val secret:String = "" + apiSecretEditText.text
-        if (prefs.getString("nighscoutApiSecret", "") != secret) {
-            Log.d(TAG, "updating nighscoutApiSecret pref")
+        if (prefs.getString("nighscoutApiSecret", null) != nightscoutApiSecret) {
+            Log.d(TAG, "updating nighscoutApiSecret pref to: " + nightscoutApiSecret)
             val edit = prefs.edit()
-            edit.putString("nightscoutApiSecret", secret)
+            edit.putString("nightscoutApiSecret", nightscoutApiSecret)
             edit.apply()
         }
     }
@@ -187,26 +178,31 @@ class ConfigurationActivity : WearableActivity() {
             scheme + domainEditText.text
         }
     }
+    private val nightscoutApiSecret get() = "" + apiSecretEditText.text
 
     private fun handleUrlConfirmation() {
         val validator = NightScoutDomainValidator(this, url(), nightscoutApiSecret)
-        validator.onValidationSuccess {
+        validator.onValidation {
             Log.d(TAG, "domain validated: " + it)
 
             persistUrlAndSecret()
             setResult(Activity.RESULT_OK)
             finish()
         }
-        validator.onValidationError {
-            // TODO: conditional messages based on Exception type
+        validator.onAuthFailureError {
+            Log.d(TAG, "domain validation auth error ")
+
+            this.runOnUiThread {
+                Toast.makeText(this, "Authentication failed\nCheck Secret", Toast.LENGTH_LONG).show()
+            }
+        }
+        validator.onOtherError {
             Log.d(TAG, "domain validationError " + it.javaClass + " " + it.message)
 
             this.runOnUiThread {
-                Toast.makeText(this, "Invalid URL: ${url()}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Connection failed: ${url()}", Toast.LENGTH_LONG).show()
             }
         }
         validator.run()
     }
-
-    private val nightscoutApiSecret get() = "" + apiSecretEditText.text
 }
