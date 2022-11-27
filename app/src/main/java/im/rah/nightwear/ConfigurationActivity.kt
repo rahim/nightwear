@@ -91,19 +91,19 @@ class ConfigurationActivity : WearableActivity() {
     }
 
     private fun loadUrlFromPrefs() {
-        val url = prefs.getString("nightscoutBaseUrl", DEFAULT_URL)!!
-        val domain = domainFromUrl(url)
+        val urlFromPrefs = prefs.getString("nightscoutBaseUrl", DEFAULT_URL)!!
+        val domain = domainFromUrl(urlFromPrefs)
         domainEditText.setText(domain)
 
-        val tld = tldFromUrl(url)
+        val tld = tldFromUrl(urlFromPrefs)
         val adapter = tldSpinner.adapter as ArrayAdapter<String>
         val tldPosition = adapter.getPosition(tld)
         tldSpinner.setSelection(tldPosition)
     }
 
     private fun loadSecretFromPrefs() {
-        val secret = prefs.getString("nightscoutApiSecret", "")
-        apiSecretEditText.setText(secret)
+        val secretFromPrefs = prefs.getString("nightscoutApiSecret", "")
+        apiSecretEditText.setText(secretFromPrefs)
     }
 
     private fun loadUnitFromPrefs() {
@@ -132,7 +132,6 @@ class ConfigurationActivity : WearableActivity() {
 
     private fun refreshUrlText() {
         Log.d(TAG, "refreshUrlText")
-        val url = url()
         if (urlTextView.text != url) {
             Log.d(TAG, "updating urlTextView")
             urlTextView.text = url
@@ -142,17 +141,16 @@ class ConfigurationActivity : WearableActivity() {
     private fun persistUrlAndSecret() {
         Log.d(TAG, "persistUrlAndSecret")
 
-        val url = url()
         if (prefs.getString("nighscoutBaseUrl", null) != url) {
             Log.d(TAG, "updating nighscoutBaseUrl pref to: " + url)
             val edit = prefs.edit()
-            edit.putString("nightscoutBaseUrl", url())
+            edit.putString("nightscoutBaseUrl", url)
             edit.apply()
         }
-        if (prefs.getString("nighscoutApiSecret", null) != nightscoutApiSecret) {
-            Log.d(TAG, "updating nighscoutApiSecret pref to: " + nightscoutApiSecret)
+        if (prefs.getString("nighscoutApiSecret", null) != secret) {
+            Log.d(TAG, "updating nighscoutApiSecret pref to: " + secret)
             val edit = prefs.edit()
-            edit.putString("nightscoutApiSecret", nightscoutApiSecret)
+            edit.putString("nightscoutApiSecret", secret)
             edit.apply()
         }
     }
@@ -171,17 +169,17 @@ class ConfigurationActivity : WearableActivity() {
         edit.apply()
     }
 
-    private fun url() : String {
+    private val url get() : String {
         return if (tldSpinner.selectedItem in COMMON_TLDS) {
             scheme + domainEditText.text + "." + tldSpinner.selectedItem
         } else {
             scheme + domainEditText.text
         }
     }
-    private val nightscoutApiSecret get() = "" + apiSecretEditText.text
+    private val secret get() = "" + apiSecretEditText.text
 
     private fun handleUrlConfirmation() {
-        val validator = NightScoutDomainValidator(this, url(), nightscoutApiSecret)
+        val validator = NightScoutDomainValidator(this, url, secret)
         validator.onValidation {
             Log.d(TAG, "domain validated: " + it)
 
@@ -200,7 +198,7 @@ class ConfigurationActivity : WearableActivity() {
             Log.d(TAG, "domain validationError " + it.javaClass + " " + it.message)
 
             this.runOnUiThread {
-                Toast.makeText(this, "Connection failed: ${url()}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Connection failed: ${url}", Toast.LENGTH_LONG).show()
             }
         }
         validator.run()
