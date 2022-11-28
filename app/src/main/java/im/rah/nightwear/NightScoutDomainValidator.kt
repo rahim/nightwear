@@ -54,7 +54,6 @@ class NightScoutDomainValidator(val context: Context, val url: String, val secre
             }
         )
         {
-            //@Throws(AuthFailureError::class)
             override fun getHeaders(): Map<String, String> {
                 val headers = HashMap<String, String>()
                 if (secret != "") {
