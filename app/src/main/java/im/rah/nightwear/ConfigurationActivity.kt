@@ -25,9 +25,10 @@ class ConfigurationActivity : WearableActivity() {
     private lateinit var domainEditText:EditText
     private lateinit var tldSpinner:Spinner
     private lateinit var apiSecretEditText:EditText
-    private lateinit var confirmButton:Button
     private lateinit var unitToggleButton:ToggleButton
     private lateinit var timeFormatToggleButton:ToggleButton
+    private lateinit var confirmButton:Button
+    private lateinit var progress:ProgressBar
 
     private lateinit var prefs:SharedPreferences
 
@@ -74,6 +75,8 @@ class ConfigurationActivity : WearableActivity() {
 
         confirmButton = findViewById(R.id.confirm_button)
         confirmButton.setOnClickListener { handleUrlConfirmation() }
+
+        progress = findViewById(R.id.progress)
 
         unitToggleButton = findViewById(R.id.unit_toggle_button)
         unitToggleButton.setOnClickListener { persistUnit() }
@@ -179,6 +182,9 @@ class ConfigurationActivity : WearableActivity() {
     private val secret get() = "" + apiSecretEditText.text
 
     private fun handleUrlConfirmation() {
+        confirmButton.visibility = View.GONE
+        progress.visibility = View.VISIBLE
+
         val validator = NightScoutDomainValidator(this, url, secret)
         validator.onValidation {
             Log.d(TAG, "domain validated: " + it)
@@ -191,6 +197,8 @@ class ConfigurationActivity : WearableActivity() {
             Log.d(TAG, "domain validation auth error ")
 
             this.runOnUiThread {
+                confirmButton.visibility = View.VISIBLE
+                progress.visibility = View.GONE
                 Toast.makeText(this, "Authentication failed\nCheck Secret", Toast.LENGTH_LONG).show()
             }
         }
@@ -198,6 +206,8 @@ class ConfigurationActivity : WearableActivity() {
             Log.d(TAG, "domain validationError " + it.javaClass + " " + it.message)
 
             this.runOnUiThread {
+                confirmButton.visibility = View.VISIBLE
+                progress.visibility = View.GONE
                 Toast.makeText(this, "Connection failed: ${url}", Toast.LENGTH_LONG).show()
             }
         }

@@ -106,6 +106,7 @@
                     android:inputType="textPersonName"
                     android:textSize="12sp" />
 
+
                 <Button
                         android:text="Confirm"
                         android:layout_width="match_parent"
@@ -114,6 +115,13 @@
                         android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
                         android:textSize="10sp"
                         style="@android:style/Widget.Material.Button.Small" />
+
+                <ProgressBar
+                    android:id="@+id/progress"
+                    style="@android:style/Widget.DeviceDefault.ProgressBar.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible" />
             </LinearLayout>
         </FrameLayout>
     </ScrollView>
