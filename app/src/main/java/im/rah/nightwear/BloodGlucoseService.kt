@@ -5,9 +5,6 @@ import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import android.support.wearable.complications.ProviderUpdateRequester
 import android.util.Log
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.threeten.bp.Duration
@@ -16,6 +13,8 @@ import java.text.ParseException
 import java.util.*
 import kotlin.concurrent.schedule
 import android.content.ComponentName
+import com.android.volley.*
+import com.google.common.hash.Hashing
 
 class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferenceChangeListener {
     var recentEntries:List<BloodGlucose?> = List<BloodGlucose?>(0) { null }
@@ -31,6 +30,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
     var onDataUpdateListeners: MutableList<(BloodGlucose)->Unit> = mutableListOf()
 
     private var nightscoutBaseUrl = ""
+    private var nightscoutApiSecret = ""
     private val requestQueue: RequestQueue = Volley.newRequestQueue(context)
     private var prefs: SharedPreferences
     private var lastRequestAdded: Instant = Instant.EPOCH
@@ -57,6 +57,7 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
         prefs.registerOnSharedPreferenceChangeListener(this)
         nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")!!
+        nightscoutApiSecret = prefs.getString("nightscoutApiSecret", "")!!
 
         Timer().schedule(0, 1000 * 15) { refresh() }
 
@@ -89,10 +90,17 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         if (key == "nightscoutBaseUrl") {
             nightscoutBaseUrl = prefs.getString("nightscoutBaseUrl", "")!!
         }
+        if (key == "nightscoutApiSecret") {
+            nightscoutApiSecret = prefs.getString("nightscoutApiSecret", "")!!
+        }
     }
 
     private fun nsRecentEntriesUrl() : String {
         return nightscoutBaseUrl + NS_RECENT_ENTRIES_PATH
+    }
+
+    private fun nsSha1HashedSecret() : String {
+        return Hashing.sha1().hashString(nightscoutApiSecret,Charsets.UTF_8).toString()
     }
 
     fun refresh(force: Boolean = false) {
@@ -112,12 +120,16 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
         // don't make requests more than once every 30s
         if (Duration.between(lastRequestAdded, Instant.now()) < Duration.ofSeconds(30)) return
 
-        Log.d(tag, "clearing queue, then requesting, nightscoutBaseUrl: " + nightscoutBaseUrl)
+        Log.d(tag, "clearing queue, then requesting")
+        Log.d(tag, "  nightscoutBaseUrl: " + nightscoutBaseUrl)
+        Log.d(tag, "  nightscoutApiSecret: " + nightscoutApiSecret)
+        Log.d(tag, "  nsSha1HashedSecret: " + nsSha1HashedSecret())
+
         requestQueue.cancelAll(this)
 
         lastRequestAdded = Instant.now()
-        val stringRequest = StringRequest(
-            Request.Method.GET, nsRecentEntriesUrl(),
+        val stringRequest = object: StringRequest(
+            Method.GET, nsRecentEntriesUrl(),
             { response ->
                 Log.d(tag, "recent bgs received, parsing...")
                 try {
@@ -129,12 +141,28 @@ class BloodGlucoseService(context: Context) : SharedPreferences.OnSharedPreferen
                     }
                 }
                 catch (e: ParseException) {
+                    // TODO: see error handling comment below
                     Log.d(tag, "ParseException for response: " + response)
                 }
             },
             {
-                Log.d(tag, "request error")
+                // TODO: it would be nice to do something with the UI state to indicate a problem
+                //       In the most common case slightly stale data is still useful, so what we
+                //       choose to show shouldn't obscure that.
+                Log.d(tag, "request error: " + it.toString())
             })
+            {
+                @Throws(AuthFailureError::class)
+                override fun getHeaders(): Map<String, String> {
+                    val headers = HashMap<String, String>()
+
+                    if (nightscoutApiSecret != "") {
+                        Log.d(TAG, "adding API-SECRET header")
+                        headers.put("API-SECRET", nsSha1HashedSecret())
+                    }
+                    return headers
+                }
+            }
         stringRequest.tag = this
 
         // Add the request to the RequestQueue.

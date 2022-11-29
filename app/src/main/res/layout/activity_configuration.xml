@@ -71,6 +71,7 @@
                         android:layout_height="wrap_content" android:id="@+id/url_label"
                         android:text="Nightscout domain"
                         android:textSize="12sp" android:textAlignment="center"/>
+
                 <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" android:id="@+id/url" android:text="https://"
@@ -82,10 +83,29 @@
                         android:text="domain"
                         android:ems="10"
                         android:id="@+id/domain" android:textSize="12sp" android:hint="domain"/>
+
                 <Spinner
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" android:id="@+id/tld" android:spinnerMode="dialog"
                 />
+
+                <TextView
+                    android:id="@+id/api_secret_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="API Secret (optional)"
+                    android:textAlignment="center"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/api_secret"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="API Secret"
+                    android:inputType="textPersonName"
+                    android:textSize="12sp" />
+
 
                 <Button
                         android:text="Confirm"
@@ -95,6 +115,13 @@
                         android:textAppearance="@android:style/TextAppearance.Material.Widget.Button"
                         android:textSize="10sp"
                         style="@android:style/Widget.Material.Button.Small" />
+
+                <ProgressBar
+                    android:id="@+id/progress"
+                    style="@android:style/Widget.DeviceDefault.ProgressBar.Small"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible" />
             </LinearLayout>
         </FrameLayout>
     </ScrollView>

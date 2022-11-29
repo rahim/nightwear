@@ -10,15 +10,12 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
-import java.io.IOException
-import java.net.URL
-import kotlin.concurrent.thread
 
 class ConfigurationActivity : WearableActivity() {
 
     companion object {
         const val TAG:String = "ConfigurationActivity"
-        private val COMMON_TLDS = arrayOf("herokuapp.com", "azurewebsites.net")
+        private val COMMON_TLDS = arrayOf("herokuapp.com", "azurewebsites.net", "fly.dev", "up.railway.app")
         private const val DEFAULT_URL = "https://domain.herokuapp.com"
     }
 
@@ -27,9 +24,11 @@ class ConfigurationActivity : WearableActivity() {
     private lateinit var urlTextView:TextView
     private lateinit var domainEditText:EditText
     private lateinit var tldSpinner:Spinner
-    private lateinit var confirmButton:Button
+    private lateinit var apiSecretEditText:EditText
     private lateinit var unitToggleButton:ToggleButton
     private lateinit var timeFormatToggleButton:ToggleButton
+    private lateinit var confirmButton:Button
+    private lateinit var progress:ProgressBar
 
     private lateinit var prefs:SharedPreferences
 
@@ -48,6 +47,7 @@ class ConfigurationActivity : WearableActivity() {
 
         domainEditText = findViewById(R.id.domain)
         urlTextView = findViewById(R.id.url)
+        apiSecretEditText = findViewById(R.id.api_secret)
 
         tldSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parentView: AdapterView<*>, selectedItemView: View, position: Int, id: Long) {
@@ -74,20 +74,9 @@ class ConfigurationActivity : WearableActivity() {
         })
 
         confirmButton = findViewById(R.id.confirm_button)
-        confirmButton.setOnClickListener {
-            thread {
-                if (urlValid()) {
-                    persistUrl()
-                    setResult(Activity.RESULT_OK)
-                    finish()
-                }
-                else {
-                    this.runOnUiThread {
-                        Toast.makeText(this, "Invalid URL: ${url()}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        }
+        confirmButton.setOnClickListener { handleUrlConfirmation() }
+
+        progress = findViewById(R.id.progress)
 
         unitToggleButton = findViewById(R.id.unit_toggle_button)
         unitToggleButton.setOnClickListener { persistUnit() }
@@ -96,6 +85,7 @@ class ConfigurationActivity : WearableActivity() {
         timeFormatToggleButton.setOnClickListener { persistTimeFormat() }
 
         loadUrlFromPrefs()
+        loadSecretFromPrefs()
         loadUnitFromPrefs()
         loadTimeFormatFromPrefs()
 
@@ -104,14 +94,19 @@ class ConfigurationActivity : WearableActivity() {
     }
 
     private fun loadUrlFromPrefs() {
-        val url = prefs.getString("nightscoutBaseUrl", DEFAULT_URL)!!
-        val domain = domainFromUrl(url)
+        val urlFromPrefs = prefs.getString("nightscoutBaseUrl", DEFAULT_URL)!!
+        val domain = domainFromUrl(urlFromPrefs)
         domainEditText.setText(domain)
 
-        val tld = tldFromUrl(url)
+        val tld = tldFromUrl(urlFromPrefs)
         val adapter = tldSpinner.adapter as ArrayAdapter<String>
         val tldPosition = adapter.getPosition(tld)
         tldSpinner.setSelection(tldPosition)
+    }
+
+    private fun loadSecretFromPrefs() {
+        val secretFromPrefs = prefs.getString("nightscoutApiSecret", "")
+        apiSecretEditText.setText(secretFromPrefs)
     }
 
     private fun loadUnitFromPrefs() {
@@ -140,20 +135,25 @@ class ConfigurationActivity : WearableActivity() {
 
     private fun refreshUrlText() {
         Log.d(TAG, "refreshUrlText")
-        val url = url()
         if (urlTextView.text != url) {
             Log.d(TAG, "updating urlTextView")
             urlTextView.text = url
         }
     }
 
-    private fun persistUrl() {
-        Log.d(TAG, "persistUrl")
-        val url = url()
-        if (prefs.getString("nighscoutBaseUrl", "") != url) {
-            Log.d(TAG, "updating nighscoutBaseUrl pref")
+    private fun persistUrlAndSecret() {
+        Log.d(TAG, "persistUrlAndSecret")
+
+        if (prefs.getString("nighscoutBaseUrl", null) != url) {
+            Log.d(TAG, "updating nighscoutBaseUrl pref to: " + url)
             val edit = prefs.edit()
-            edit.putString("nightscoutBaseUrl", url())
+            edit.putString("nightscoutBaseUrl", url)
+            edit.apply()
+        }
+        if (prefs.getString("nighscoutApiSecret", null) != secret) {
+            Log.d(TAG, "updating nighscoutApiSecret pref to: " + secret)
+            val edit = prefs.edit()
+            edit.putString("nightscoutApiSecret", secret)
             edit.apply()
         }
     }
@@ -172,19 +172,45 @@ class ConfigurationActivity : WearableActivity() {
         edit.apply()
     }
 
-    private fun url() : String {
+    private val url get() : String {
         return if (tldSpinner.selectedItem in COMMON_TLDS) {
             scheme + domainEditText.text + "." + tldSpinner.selectedItem
         } else {
             scheme + domainEditText.text
         }
     }
+    private val secret get() = "" + apiSecretEditText.text
 
-    private fun urlValid() : Boolean {
-        return try {
-            URL(url() + "/api/v1/status.json").readText().contains("nightscout")
-        } catch (e : IOException) {
-            false
+    private fun handleUrlConfirmation() {
+        confirmButton.visibility = View.GONE
+        progress.visibility = View.VISIBLE
+
+        val validator = NightScoutDomainValidator(this, url, secret)
+        validator.onValidation {
+            Log.d(TAG, "domain validated: " + it)
+
+            persistUrlAndSecret()
+            setResult(Activity.RESULT_OK)
+            finish()
         }
+        validator.onAuthFailureError {
+            Log.d(TAG, "domain validation auth error ")
+
+            this.runOnUiThread {
+                confirmButton.visibility = View.VISIBLE
+                progress.visibility = View.GONE
+                Toast.makeText(this, "Authentication failed\nCheck Secret", Toast.LENGTH_LONG).show()
+            }
+        }
+        validator.onOtherError {
+            Log.d(TAG, "domain validationError " + it.javaClass + " " + it.message)
+
+            this.runOnUiThread {
+                confirmButton.visibility = View.VISIBLE
+                progress.visibility = View.GONE
+                Toast.makeText(this, "Connection failed: ${url}", Toast.LENGTH_LONG).show()
+            }
+        }
+        validator.run()
     }
 }
